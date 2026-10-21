@@ -1,0 +1,189 @@
+---
+name: functional-composing-functions
+description: Use when two steps do not fit together, when deciding parameter order, or when a signature is partial rather than total.
+license: MIT
+metadata:
+  pack: functional-design-skills
+  version: 3.3.0
+---
+
+# Composing Functions
+
+**In this pack:** [how much design a task warrants](../functional-design/references/calibration.md),
+[the notation](../functional-design/references/notation.md), and
+[syntax per language](../functional-design/SKILL.md#language-packs).
+
+## Overview
+
+Functional design builds behaviour by connecting small functions, and
+connecting them works only when each one is **total**: for every input of
+the declared type it produces an output of the declared type, with no
+exception, no null, and no hidden condition. Totality is what makes
+composition safe; without it every join is a place where the chain can
+silently break.
+
+The rest is mechanics: composition, pipes, currying, and partial
+application. They are worth knowing precisely, because they are how
+dependencies are supplied and how pipelines are assembled.
+
+## When to use
+
+- Two functions almost fit but not quite
+- Deciding the order of a function's parameters
+- A function throws for some inputs, or returns null
+- Building a pipeline out of existing functions
+- Wondering whether to pass a value or a function
+
+Not for: designing the domain types themselves.
+
+## Core rules
+
+1. Rule. **Make every function a module exports total.** Narrow the input
+   type, or widen the output type to `Option` or `Result`. Never leave
+   the gap implicit. A value the input type was meant to exclude is a
+   bug upstream, not a gap here: crash on it, as
+   [functional-defining-errors-out-of-existence](../functional-defining-errors-out-of-existence/SKILL.md)
+   says. A private helper may rely on what its caller in the same module
+   has just established, and [totality.md](references/totality.md) says
+   when.
+2. Judgement. **One input, one output, conceptually.** Group related data
+   parameters into a named record rather than passing six positional
+   arguments.
+3. Default. **Put the varying argument last.** Data last, configuration and
+   dependencies first, so partial application produces a useful function. In a
+   language whose pipe passes its value as the first argument, as Elixir's does,
+   the order is the other way round: the data first, and what varies least last.
+4. Default. **Name the composed function.** A pipeline assigned to a name that
+   states the business process beats a long anonymous chain. A short chain
+   applied to a value at hand, of about four steps or fewer, needs no name.
+5. Default. **Prefer explicit parameters to captured context.** A closure over
+   module state is a hidden input. Partial application is not capture:
+   `priceBooking catalogue` holds a value that the signature of `priceBooking`
+   names, so anyone who reads that signature sees it.
+6. Judgement. **Stop before the chain becomes unreadable.** Point-free style is
+   a tool, not a goal; a named intermediate value is often clearer.
+7. Rule. **Match the shapes before composing.** Lift pure into fallible, and
+   fallible into asynchronous, deliberately.
+
+## Totality
+
+```text
+-- not total: throws for zero, and the type does not say so
+divide : Integer -> Integer -> Integer
+
+-- total by narrowing the input
+divide : Integer -> NonZeroInteger -> Integer
+
+-- total by widening the output
+divide : Integer -> Integer -> Result<Integer, DivideByZero>
+```
+
+Prefer narrowing when the caller can reasonably produce the narrower
+type, because it removes the failure entirely. Prefer widening when the
+value comes from outside and can genuinely be wrong.
+
+The four ways a function is secretly partial:
+
+| Secret partiality      | Repair                                 |
+| ---------------------- | -------------------------------------- |
+| Throws an exception    | Return `Result`                        |
+| Returns null           | Return `Option`                        |
+| Returns a wrong answer | Narrow the input type so it cannot     |
+| Loops forever          | Bound the input, or return a step type |
+
+## Composition and piping
+
+```text
+-- compose: build a function from functions
+processName = trim >> toTitleCase >> abbreviate
+
+-- pipe: push a value through
+result = rawName |> trim |> toTitleCase |> abbreviate
+```
+
+Use composition when defining a reusable function, and piping when
+transforming a value at hand. Composition of fallible functions needs a
+different operator, because `Result<B, E>` does not fit an input of `B`:
+
+```text
+confirmBooking = validate >=> price >=> acknowledge
+```
+
+See
+[functional-handling-errors-with-results](../functional-handling-errors-with-results/SKILL.md).
+
+## Currying and partial application
+
+Every multi-argument function can be seen as a chain of one-argument
+functions. That is what makes partial application possible, and partial
+application is how dependencies are supplied.
+
+```text
+priceBooking :
+  Catalogue -> ValidatedBooking -> Result<PricedBooking, PricingError>
+
+-- apply the value once; the handler read the catalogue first
+priceFromCatalogue = priceBooking catalogue
+
+-- the result is exactly the shape a step wants
+priced = validated |> bind priceFromCatalogue
+```
+
+This is why parameter order matters: dependencies first, data last. With
+the order reversed, partial application produces nothing useful and the
+pipeline needs a wrapper at every step.
+
+## Functions as values
+
+A function type is the smallest possible interface, and passing one is
+the simplest way to make behaviour vary.
+
+```text
+alias Comparator = Treatment -> Treatment -> Ordering
+sortTreatments : Comparator -> List<Treatment> -> List<Treatment>
+```
+
+Name the function type when it means something in the domain
+(`RoundingRule`), and leave it inline when it is generic
+(`A -> Boolean`).
+
+## Red flags
+
+- A function whose documentation says "throws if..."
+- A parameter list where two adjacent parameters share a type
+- A chain of unnamed steps longer than about four, in a workflow that
+  is not itself a list of named steps
+- A function that takes a boolean to select behaviour
+- A helper that exists only to reorder another function's arguments
+- A point-free expression with no named part, longer than about four
+  functions
+
+## Common mistakes
+
+- **Composing partial functions.** One `null` in the middle and the chain
+  fails somewhere unrelated. Fix totality first, then compose.
+- **Configuration last.** Then partial application is useless and every
+  call site repeats the same dependency arguments.
+- **Chasing point-free style.** Readability is the objective; an
+  intermediate name is not a defect.
+- **Very long parameter lists.** Beyond about four data parameters,
+  group them into a record and gain names at every call site. The
+  record is for data. Capabilities stay separate parameters of a
+  handler and are applied at the composition root; see
+  [functional-parameterizing-dependencies](../functional-parameterizing-dependencies/SKILL.md).
+- **Hiding a dependency in a closure.** A captured database handle is a
+  parameter that the signature refuses to admit.
+
+## Related skills
+
+- [functional-designing-workflow-pipelines](../functional-designing-workflow-pipelines/SKILL.md)
+- [functional-parameterizing-dependencies](../functional-parameterizing-dependencies/SKILL.md)
+- [functional-handling-errors-with-results](../functional-handling-errors-with-results/SKILL.md)
+- [functional-folding-over-data](../functional-folding-over-data/SKILL.md)
+
+## Further reading
+
+- [totality.md](references/totality.md) is the procedure for making a
+  function total, with the trade-off between narrowing and widening.
+- [composition-toolkit.md](references/composition-toolkit.md) lists the
+  operators for connecting mismatched shapes, with when to use each.

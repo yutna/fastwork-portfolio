@@ -1,0 +1,313 @@
+---
+name: functional-elixir
+description: Use when designing Elixir structs, ok and error tuples, or `with` pipelines, and whether a GenServer, a supervision tree, or letting a process crash is the right answer.
+license: MIT
+metadata:
+  pack: functional-design-skills
+  version: 3.3.0
+---
+
+# Functional Elixir
+
+## Overview
+
+Elixir gives immutability, pattern matching, and pipelines by default, so
+much of this pack is already the idiom. What it gives only in part is a
+compiler that rejects an illegal state. On Elixir 1.20 the compiler
+infers types from patterns and guards and warns about a call that can
+never succeed, but a warning does not stop the build and it does not
+read `@spec`. So the enforcement lives in structs with enforced keys,
+constructor functions, a build that fails on warnings, and Dialyzer.
+
+It also gives processes, the language's way of holding changing state in
+memory over time. Whether to hold state in memory at all is a design
+question rather than a performance one, and the usual answer is the
+database; [otp.md](references/otp.md) gives the test.
+
+This pack covers the language and OTP. Phoenix, Ecto and LiveView are in
+[functional-elixir-phoenix](../functional-elixir-phoenix/SKILL.md).
+
+## When to use
+
+- An Elixir project, with or without a web framework
+- Designing a struct, a tagged tuple, or a constructor
+- Composing a pipeline that can fail
+- Deciding whether something should be a process, and what supervises it
+- Reviewing Elixir against the core design rules
+
+Not for: Erlang runtime tuning, release configuration, or Phoenix.
+
+## Notation mapping
+
+| Neutral notation    | Elixir                                         |
+| ------------------- | ---------------------------------------------- |
+| Record type         | `defstruct` with `@enforce_keys`               |
+| Choice type         | Tagged tuple, or a struct per case             |
+| Single-case wrapper | A struct with one field, plus `new/1`          |
+| `Result<T, E>`      | `{:ok, term}` or `{:error, term}`              |
+| `Option<T>`         | `{:ok, term}` or `:error`; never a bare `nil`  |
+| `>=>` composition   | `with` expression                              |
+| `\|>` pipe          | The pipe operator                              |
+| `>>` composition    | A function that pipes its argument             |
+| Exhaustive match    | Function clauses with no catch-all             |
+| Boundary parse      | A `new/1` function                             |
+| Mutable cell        | A database row, or a process where otp.md says |
+
+The pipe passes its value as the first argument. So functions here take
+the data first and what they depend on last, which is the reverse of
+the order the core skills use, for the reason they give: it is the
+order that composes in this language.
+
+## Core rules
+
+1. Rule. **`@enforce_keys` on every domain struct.** A struct with optional
+   keys is a record of maybes.
+2. Rule. **Construct through the module's own functions**, `new/1` for
+   outside input, returning `{:ok, struct}` or `{:error, reason}`. Never
+   build a domain struct with a literal outside its module.
+3. Default. **Tagged tuples for choices**, matched by function clauses rather
+   than by `case` inside one clause. A case that carries more than two fields
+   beside its tag is a struct of its own, not a wide tuple. This is about the
+   choice a function receives: the result of a call is matched with `case` where
+   the call is made.
+4. Rule. **No catch-all clause over a domain choice.** When the clauses
+   match the cases of a tagged tuple, or one struct per case, a case
+   nobody wrote should raise `FunctionClauseError`, which is a loud,
+   findable bug. A parser of outside input is the opposite case: its
+   last clause takes everything else and returns the error.
+5. Default. **`with` for pipelines that can fail.** A failing step ends the
+   `with` and its error is what the pipeline returns, so no `else` is needed.
+   Each step keeps its own narrow error; where that is not one of the
+   pipeline's, a private function around the step lifts it. An `else` that
+   matches the errors of several steps has to guess which step produced
+   which.
+6. Default. **The default is no process.** Reach for one when state has to be
+   shared across requests and does not fit in the database, when something must
+   be able to fail without taking the rest down with it, when work must be
+   serialised per entity, or when work is periodic. A GenServer around a value
+   with one caller is a mutable variable with a mailbox. Where one process
+   would hold several jobs, ask what should still be working after it fails;
+   [otp.md](references/otp.md) draws the boundary from that answer.
+7. Rule. **Crash on a bug, return a tuple on a business outcome.** A
+   slot already taken is `{:error, :slot_unavailable}`. A nil that
+   should have been impossible is a crash, and the supervisor's job.
+8. Default. **`@spec` on every public function, with Dialyzer and
+   `mix compile --warnings-as-errors` in CI.** The compiler reports what it can
+   infer from patterns and guards, as warnings, and does not read specs;
+   Dialyzer reads them. Without both, a spec is a comment and a type warning is
+   a line in a log. A function that implements a behaviour's callback needs no
+   `@spec` of its own: the `@callback` gives its type, and Dialyzer warns when
+   the implementation drifts from it.
+
+## Pattern
+
+```elixir
+defmodule Clinic.Scheduling.Appointment do
+  alias Clinic.Scheduling.{Doctor, Patient, Slot}
+
+  @hold_seconds 120
+
+  @enforce_keys [:id, :patient, :doctor, :slot, :status]
+  defstruct [:id, :patient, :doctor, :slot, :status]
+
+  @type status ::
+          {:held, DateTime.t()}
+          | {:confirmed, DateTime.t()}
+          | {:cancelled, String.t(), DateTime.t()}
+
+  @type t :: %__MODULE__{
+          id: __MODULE__.Id.t(),
+          patient: Patient.Id.t(),
+          doctor: Doctor.Id.t(),
+          slot: Slot.Id.t(),
+          status: status()
+        }
+
+  @type event ::
+          {:appointment_booked, t()} | {:appointment_confirmed, t()}
+
+  @type confirm_error :: :not_held | :hold_expired
+
+  @spec confirm(t(), DateTime.t()) ::
+          {:ok, t(), [event()]} | {:error, confirm_error()}
+  def confirm(%__MODULE__{status: {:held, held_at}} = appt, now) do
+    if DateTime.diff(now, held_at) <= @hold_seconds do
+      confirmed = %{appt | status: {:confirmed, now}}
+      {:ok, confirmed, [{:appointment_confirmed, confirmed}]}
+    else
+      {:error, :hold_expired}
+    end
+  end
+
+  def confirm(%__MODULE__{status: {:confirmed, _}}, _now),
+    do: {:error, :not_held}
+
+  def confirm(%__MODULE__{status: {:cancelled, _, _}}, _now),
+    do: {:error, :not_held}
+end
+```
+
+Each clause is the function for one source state, which is how this
+language writes one function per transition. The clauses for a confirmed
+and a cancelled appointment answer a named refusal, so the caller sees
+why. Those two are written out so that a status added later raises here
+until someone decides what confirming it means. The status tuple carries
+the timestamp that belongs to each state, which removes the nullable
+`confirmed_at`, `cancelled_at` columns from the domain type. See
+[functional-modeling-state-machines](../functional-modeling-state-machines/SKILL.md).
+
+## Pipelines with `with`
+
+The pure pipeline is the core. It takes the command, the values the
+handler read, and the instant, and refuses only what a rule refuses:
+
+```elixir
+# core, in the Appointment module: pure, no Repo and no clock
+@type booking_error :: :slot_unavailable
+
+@spec book(BookCommand.t(), Patient.t(), Schedule.t(), DateTime.t()) ::
+        {:ok, t(), [event()]} | {:error, booking_error()}
+def book(%BookCommand{} = command, %Patient{} = patient, schedule, now) do
+  with :ok <- Schedule.check_free(schedule, command.slot) do
+    appointment = %__MODULE__{
+      id: command.appointment_id,
+      patient: patient.id,
+      doctor: command.doctor,
+      slot: command.slot,
+      status: {:held, now}
+    }
+
+    {:ok, appointment, [{:appointment_booked, appointment}]}
+  end
+end
+```
+
+The handler is the context function. It parses, reads, calls the core,
+and writes; its failure type adds what only the shell can meet:
+
+```elixir
+# handler, in Clinic.Scheduling
+@type booking_failure ::
+        {:invalid, term()}
+        | :patient_not_found
+        | :unavailable
+        | Appointment.booking_error()
+
+@spec book_appointment(map(), DateTime.t()) ::
+        {:ok, Appointment.t(), [Appointment.event()]}
+        | {:error, booking_failure()}
+def book_appointment(params, now) do
+  with {:ok, command} <- parse_command(params),
+       {:ok, patient} <- find_patient(command.patient),
+       {:ok, schedule} <- load_schedule(command.doctor, command.slot),
+       {:ok, appointment, events} <-
+         Appointment.book(command, patient, schedule, now),
+       :ok <- save_booking(appointment, events) do
+    {:ok, appointment, events}
+  end
+end
+
+defp parse_command(params) do
+  case BookCommand.new(params) do
+    {:ok, _command} = parsed -> parsed
+    {:error, reason} -> {:error, {:invalid, reason}}
+  end
+end
+
+defp find_patient(id) do
+  case load_patient(id) do
+    {:ok, _patient} = found -> found
+    {:error, :not_found} -> {:error, :patient_not_found}
+    {:error, :unavailable} = fault -> fault
+  end
+end
+```
+
+`Appointment.book/4` is the core and `book_appointment/2` is the
+handler, in the sense of
+[functional-separating-pure-core-from-shell](../functional-separating-pure-core-from-shell/SKILL.md).
+The load and save helpers are private functions of the context that
+touch the database, and each answers `{:error, :unavailable}` when it
+cannot reach it.
+
+`with` is the railway composition of
+[functional-handling-errors-with-results](../functional-handling-errors-with-results/SKILL.md).
+A step that does not match ends the `with`, and its value is the result,
+so a step that already returns the pipeline's error needs no `else`. The
+patient lookup answers `{:error, :not_found}`, which does not say what
+was missing, so `find_patient/1` turns it into
+`{:error, :patient_not_found}` beside the call that knows, and passes a
+store fault on unchanged. `parse_command/1` does the same in one clause:
+it lifts `BookCommand.new/1`'s error into the `{:invalid, reason}` the
+failure type names. An `else` over the whole pipeline would have to
+guess which step an error came from, and a single
+`_ -> {:error, :failed}` throws away everything the error channel was
+carrying.
+
+## Structs or plain maps
+
+Elixir idiom sits closer to plain maps than most of this pack assumes,
+and that is often right — but decide it per value, not by habit.
+
+A struct is the modelled route: it gives the value a name, makes
+`%Booking{}` pattern matches fail loudly on the wrong type, and gives
+Dialyzer something to check. A bare map is the generic route, and it is
+correct when the keys come from config, from a tenant, or from an admin,
+or when the map is only stored and forwarded.
+
+The usual answer is a struct whose one field is a map: the envelope
+modelled, the varying part generic. See
+[functional-choosing-types-or-plain-data](../functional-choosing-types-or-plain-data/SKILL.md).
+Note that Ecto's `:map` column and embedded schemas are exactly this
+split expressed in the database.
+
+## Processes
+
+A GenServer is shell, not core: the decision it makes should be a pure
+function it calls, and the process should hold only what genuinely has
+to outlive a request. Supervision is where failure is designed rather
+than configured, and a restart returns a process to its initial state
+and nothing more. See [otp.md](references/otp.md).
+
+## Red flags
+
+- A struct with no `@enforce_keys`
+- A catch-all `_` clause over a domain choice
+- `with ... else _ -> {:error, :error}`
+- A `with` whose `else` matches the errors of more than one step
+- A GenServer holding state that a database or a caller could hold
+- A supervision strategy chosen without saying what depends on what
+- `try/rescue` around domain logic
+- `nil` used to mean three different things
+- `@spec` absent, or Dialyzer not run
+- A build that passes with compiler warnings
+
+## Common mistakes
+
+- **A GenServer per entity by default.** Use one for a reason rule 6
+  gives. Otherwise it is a mutable variable with a process around it.
+- **Catch-all clauses over a domain choice.** They convert a missing case
+  into a wrong answer.
+- **`{:error, :error}`.** An error atom with no information forces the
+  caller to guess.
+- **Expecting a restart to restore work in flight.** It restores the
+  initial state. Messages in the mailbox die with the process, and
+  effects already performed stay performed.
+- **Using a struct where the keys come from outside.** Config, tenant
+  and admin-defined shapes are the generic route; see the section above.
+
+## Related skills
+
+- [functional-modeling-state-machines](../functional-modeling-state-machines/SKILL.md)
+- [functional-handling-errors-with-results](../functional-handling-errors-with-results/SKILL.md)
+- [functional-separating-pure-core-from-shell](../functional-separating-pure-core-from-shell/SKILL.md)
+- [functional-making-effects-reliable](../functional-making-effects-reliable/SKILL.md)
+- [functional-elixir-phoenix](../functional-elixir-phoenix/SKILL.md)
+
+## Further reading
+
+- [types-and-structs.md](references/types-and-structs.md) covers structs,
+  wrappers, tagged tuples, typespecs, and Dialyzer.
+- [otp.md](references/otp.md) covers where stateful processes belong,
+  processes as isolation boundaries, supervision as failure design,
+  what a restart cannot restore, and testing without sleeping.

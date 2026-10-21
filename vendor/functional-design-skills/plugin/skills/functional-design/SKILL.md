@@ -1,0 +1,285 @@
+---
+name: functional-design
+description: Use when starting design or review, deciding how much design a task warrants, from a throwaway script to a subsystem, unsure which skill fits, or the requirement is undecided.
+license: MIT
+metadata:
+  pack: functional-design-skills
+  version: 3.3.0
+---
+
+# Functional Design
+
+## Overview
+
+This pack is a set of executable design rules for codebases written in a
+functional style. It covers complexity and module boundaries, modelling a
+domain in types, composing workflows, immutability, and where effects
+belong.
+
+One method runs through all of it: make the domain explicit in types,
+express behaviour as composed total functions, push effects to the edges,
+and hide everything else behind deep interfaces.
+
+## When to use
+
+- Starting a new module, workflow, endpoint, or bounded context
+- A small change forces edits in many places, or nobody can predict what
+  a change will break
+- Reviewing a design or a diff and needing a concrete checklist
+- Unsure which skill in this pack applies to the problem in front of you
+
+Not for: language syntax lookups, build and tooling problems, or
+deciding what the software should do in the first place.
+
+## How much design does this need?
+
+Decide this before opening a skill. The row is chosen by something you
+can observe about the task, not by how important it feels.
+
+| The task                      | Apply               | Skip         |
+| ----------------------------- | ------------------- | ------------ |
+| Output is an answer           | nothing             | everything   |
+| One function, module exists   | names, totality     | modelling    |
+| A feature in an existing flow | the flow's idiom    | new contexts |
+| A new module or workflow      | the design loop     | nothing      |
+| A new bounded context         | loop, then contexts | nothing      |
+
+Reading the rows:
+
+- **Output is an answer.** A script run once, a probe, a migration you
+  will delete. Write it, get the answer, label it throwaway.
+- **One function, module exists.** Match what the module already does.
+  Give the function an honest signature and a precise name. Do not
+  introduce a wrapper type, an error union, or a boundary the module
+  does not already have.
+- **A feature in an existing flow.** The idiom is already decided; your
+  job is to fit it and never leave the code worse.
+  [functional-programming-strategically](../functional-programming-strategically/SKILL.md)
+  says what more a change owes. New types only where the feature
+  genuinely introduces a new concept.
+- **A new module or workflow.** The full loop below is worth its cost,
+  because other code is about to depend on the shape you choose.
+- **A new bounded context.** The loop, plus the language and boundary
+  work in `functional-capturing-the-domain` and
+  `functional-enforcing-consistency-boundaries`.
+
+Applying a heavier row than the task calls for is itself a design
+failure: it adds interface, indirection, and reading cost that the
+problem did not ask for, which is the definition of complexity these
+skills exist to remove. See
+[calibration.md](references/calibration.md) for the failure modes in
+both directions.
+
+## How strictly a rule is meant
+
+Every numbered item under a skill's `Core rules` opens with one of three
+labels. The label says what it means to do otherwise.
+
+- **Rule.** Doing otherwise is a defect, in any code that is kept.
+- **Default.** Do this unless the condition the item states holds. An
+  item that states none is one this pack knows no exception to: follow
+  it, and where you still do otherwise, give the reason in the reply or
+  the pull request.
+- **Judgement.** Two answers are defensible. The item says what tips the
+  choice, and where nothing tips it either answer is right.
+
+Two things come before any label. The table above decides how much of
+the pack a task takes on at all, so a rule in a skill that the row skips
+binds nothing. And a convention of this codebase, written down or simply
+followed throughout it, comes before all three labels, a `Rule`
+included: keep to it, and where keeping to it costs correctness, say
+so.
+
+## Is the problem decided?
+
+The last two rows assume the problem is settled and the open question is
+what shape the code takes. Check that before entering the loop, in one
+move:
+
+**State one rule the software must follow, with an example it accepts
+and an example it refuses.**
+
+If that comes out in a sentence, write the sentence down and start. A
+request that already states its rules has passed the check: write each
+back in a sentence, with an example it accepts and one it refuses, and
+start. The check costs thirty seconds, and what it asks for is a spoken
+rule, not a document. Demanding a written
+specification from someone who can simply say the rule is applying a
+heavier row than the task calls for. Edge cases that come up later are
+questions to ask as you go; they do not gate the start.
+
+If it does not come out, the task is in no row on this table, and what
+is missing is not design:
+
+- the rules, each with an example it accepts and one it refuses
+- the questions nobody can answer yet, each with the person who owns it
+
+Producing those is a different activity, usually with different people
+in the room, and no amount of modelling substitutes for it. Types
+written over an undecided problem still compile; they encode the guess
+and make it expensive to revisit.
+
+Working alone, say in your reply that the task is in no row of the
+table and that this work comes before any design, then what has to be
+produced: the rules, each with an example it accepts and one it refuses,
+and the questions, each with the role that can answer it, or the person
+where a file names one. Write out only the rules someone has stated, in
+the request or in a file: a guess written as an example, even one
+labelled a hypothesis or an assumption, reads as a requirement the next
+person inherits. Then stop before modelling.
+[working-alone.md](references/working-alone.md) says what stands in for
+the people a step assumes, and which of its steps this check overrides.
+
+[functional-capturing-the-domain](../functional-capturing-the-domain/SKILL.md)
+covers part of this. Its discovery procedure produces the events, the
+vocabulary, and the places where the experts disagree, which is most of the way
+there. It stops short of rules with worked examples, and that last piece is not
+design work.
+
+## The design loop
+
+Run in order. Skip a step only when the previous one proved it irrelevant.
+
+1. Say what the software must do in the domain's own words, as commands
+   and events. See
+   [functional-capturing-the-domain](../functional-capturing-the-domain/SKILL.md).
+2. Model the data so impossible states cannot be built. See
+   [functional-modeling-with-algebraic-types](../functional-modeling-with-algebraic-types/SKILL.md)
+   and
+   [functional-making-illegal-states-unrepresentable](../functional-making-illegal-states-unrepresentable/SKILL.md).
+3. Write the workflow as a pipeline of total functions, typed end to end.
+   See
+   [functional-designing-workflow-pipelines](../functional-designing-workflow-pipelines/SKILL.md).
+4. Decide where effects live: pure core, effectful shell. See
+   [functional-separating-pure-core-from-shell](../functional-separating-pure-core-from-shell/SKILL.md).
+5. Shape the modules so each hides more than it reveals. See
+   [functional-designing-deep-modules](../functional-designing-deep-modules/SKILL.md)
+   and
+   [functional-hiding-information](../functional-hiding-information/SKILL.md).
+6. Name things precisely and comment only what code cannot say. See
+   [functional-choosing-precise-names](../functional-choosing-precise-names/SKILL.md).
+7. Audit the result against the red-flag catalogue. See
+   [functional-reviewing-functional-design](../functional-reviewing-functional-design/SKILL.md).
+
+## Symptom to skill
+
+- Small change touches many files -> [functional-diagnosing-complexity](../functional-diagnosing-complexity/SKILL.md)
+- Shipping fast now, paying later -> [functional-programming-strategically](../functional-programming-strategically/SKILL.md)
+- Reader cannot tell what matters -> [functional-deciding-what-matters](../functional-deciding-what-matters/SKILL.md)
+- Interface as large as the code behind it -> [functional-designing-deep-modules](../functional-designing-deep-modules/SKILL.md)
+- Callers know internal details -> [functional-hiding-information](../functional-hiding-information/SKILL.md)
+- Layers repeat the same abstraction -> [functional-separating-layers](../functional-separating-layers/SKILL.md)
+- Unsure whether to split a function -> [functional-splitting-and-joining-code](../functional-splitting-and-joining-code/SKILL.md)
+- Dependency direction feels wrong -> [functional-applying-solid-functionally](../functional-applying-solid-functionally/SKILL.md)
+- Code and business speak different words -> [functional-capturing-the-domain](../functional-capturing-the-domain/SKILL.md)
+- Types are records of primitives -> [functional-modeling-with-algebraic-types](../functional-modeling-with-algebraic-types/SKILL.md)
+- Shape comes from config or varies per tenant -> [functional-choosing-types-or-plain-data](../functional-choosing-types-or-plain-data/SKILL.md)
+- Booleans and nullable fields encode state -> [functional-making-illegal-states-unrepresentable](../functional-making-illegal-states-unrepresentable/SKILL.md)
+- Strings and numbers used raw -> [functional-constraining-primitive-values](../functional-constraining-primitive-values/SKILL.md)
+- Status fields and if-ladders -> [functional-modeling-state-machines](../functional-modeling-state-machines/SKILL.md)
+- Unclear what one transaction covers -> [functional-enforcing-consistency-boundaries](../functional-enforcing-consistency-boundaries/SKILL.md)
+- Use case spread across services -> [functional-designing-workflow-pipelines](../functional-designing-workflow-pipelines/SKILL.md)
+- Functions do not fit together -> [functional-composing-functions](../functional-composing-functions/SKILL.md)
+- Database calls deep inside logic -> [functional-parameterizing-dependencies](../functional-parameterizing-dependencies/SKILL.md)
+- Errors thrown and caught everywhere -> [functional-handling-errors-with-results](../functional-handling-errors-with-results/SKILL.md)
+- Error handling dwarfs the happy path -> [functional-defining-errors-out-of-existence](../functional-defining-errors-out-of-existence/SKILL.md)
+- Logic cannot be tested without I/O -> [functional-separating-pure-core-from-shell](../functional-separating-pure-core-from-shell/SKILL.md)
+- Shared mutable state or race conditions -> [functional-managing-state-immutably](../functional-managing-state-immutably/SKILL.md)
+- Wire and storage shapes leak inward -> [functional-crossing-io-boundaries](../functional-crossing-io-boundaries/SKILL.md)
+- Reaching for a class-based pattern -> [functional-translating-gof-patterns](../functional-translating-gof-patterns/SKILL.md)
+- Loops accumulating into variables -> [functional-folding-over-data](../functional-folding-over-data/SKILL.md)
+- Deep recursion or expensive repeats -> [functional-using-recursion-and-laziness](../functional-using-recursion-and-laziness/SKILL.md)
+- Names are vague or hard to choose -> [functional-choosing-precise-names](../functional-choosing-precise-names/SKILL.md)
+- Comments restate the code -> [functional-writing-useful-comments](../functional-writing-useful-comments/SKILL.md)
+- Tests need heavy mocking -> [functional-testing-functional-code](../functional-testing-functional-code/SKILL.md)
+- Need to judge a design or a diff -> [functional-reviewing-functional-design](../functional-reviewing-functional-design/SKILL.md)
+- Imperative code to be moved forward -> [functional-refactoring-toward-functional-design](../functional-refactoring-toward-functional-design/SKILL.md)
+- Effects retried, duplicated, or lost -> [functional-making-effects-reliable](../functional-making-effects-reliable/SKILL.md)
+- An incident the records could not explain -> [functional-designing-what-to-observe](../functional-designing-what-to-observe/SKILL.md)
+
+## Language packs
+
+Core skills use a neutral notation. For real syntax, load the pack that
+matches the project and use it alongside the core skill.
+
+- [functional-javascript](../functional-javascript/SKILL.md)
+- [functional-typescript](../functional-typescript/SKILL.md)
+- [functional-typescript-effect](../functional-typescript-effect/SKILL.md)
+- [functional-typescript-ts-pattern](../functional-typescript-ts-pattern/SKILL.md)
+- [functional-typescript-xstate](../functional-typescript-xstate/SKILL.md)
+- [functional-typescript-react](../functional-typescript-react/SKILL.md)
+- [functional-typescript-react-nextjs](../functional-typescript-react-nextjs/SKILL.md)
+- [functional-elixir](../functional-elixir/SKILL.md)
+- [functional-elixir-phoenix](../functional-elixir-phoenix/SKILL.md)
+
+## Quick reference
+
+| Question                     | Answer                                  |
+| ---------------------------- | --------------------------------------- |
+| Where does validation go?    | At the boundary, into domain types      |
+| Where does I/O go?           | Edges only; core stays pure             |
+| How are errors returned?     | Result values, not exceptions           |
+| How does the core get data?  | A handler reads it, and passes values   |
+| What makes an interface good | It hides far more than it reveals       |
+| Does this shape need a type? | Yes, unless a listed fact is true of it |
+| When is a design done?       | When the red-flag audit finds none      |
+
+The facts in the shape row are listed in
+[functional-choosing-types-or-plain-data](../functional-choosing-types-or-plain-data/SKILL.md).
+
+## Red flags
+
+Each is a place to look, not a verdict. Where this codebase states a rule
+of its own, that rule is the answer; elsewhere a flag becomes a finding
+only with the evidence listed beside it.
+
+- A design decision was made before anyone named the domain concept.
+  Evidence: a name in the diff that the specification, the ticket, and
+  the glossary do not use.
+- A type can represent a state the business forbids. Evidence: a value
+  of that type that a stated rule refuses, built in a test or an example.
+- A function's signature does not say what it can fail with. Evidence: a
+  `throw`, a null return, or a swallowed error in the body that the
+  signature does not show.
+- A module's interface is as complicated as its implementation.
+  Evidence: the exported signatures and their documentation take about
+  as many lines as the code behind them.
+- Only one design was considered. Evidence: a new module or workflow
+  whose design notes or pull request text list no alternative. A change
+  that follows the module's existing idiom needs no alternative.
+
+## Further reading
+
+- [notation.md](references/notation.md) is the neutral notation used by
+  every core skill in this pack.
+- [design-loop.md](references/design-loop.md) is a worked pass through
+  the design loop on one small feature.
+- [principles.md](references/principles.md) is a page of the main
+  rules in the pack, for when there is no time to read a skill.
+- [calibration.md](references/calibration.md) is how much of the pack a
+  given task actually warrants, and the cost of getting that wrong.
+- [working-alone.md](references/working-alone.md) is what to do where a
+  step asks for an expert, a reviewer, or an owner and there is none to
+  ask.
+- [project-setup.md](references/project-setup.md) is a block for a
+  project's `CLAUDE.md` that states what outranks what and when the
+  pack applies to work, not only to questions.
+- [essential-and-accidental.md](../functional-diagnosing-complexity/references/essential-and-accidental.md)
+  is the test that finds candidates for removal before any refactor: did
+  we add this complexity, or is it in the problem?
+
+## Worked examples
+
+Five end-to-end walkthroughs. Judgment transfers through these better
+than through rules.
+
+- [design-loop.md](references/design-loop.md) — a small feature through
+  the design loop.
+- [a new workflow](../functional-designing-workflow-pipelines/references/worked-example.md)
+  — booking an appointment, from event storming to composed code.
+- [a refactor](../functional-refactoring-toward-functional-design/references/worked-refactor.md)
+  — a legacy service moved through the ten moves.
+- [a read model](../functional-crossing-io-boundaries/references/worked-read-model.md)
+  — a screen where the aggregate rules do not apply.
+- [a long-running process](../functional-making-effects-reliable/references/worked-long-running.md)
+  — three systems, compensation, and idempotency.

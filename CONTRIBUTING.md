@@ -28,4 +28,19 @@ on GitHub are the changelog.
 
 ## Local development
 
-<!-- Stack-specific setup, build and test commands go here. -->
+```bash
+mise install
+mise exec -- bundle install
+mise exec -- npm ci
+mise exec -- bundle exec jekyll build
+mise exec -- npm run test:all
+mise exec -- npm run preview
+```
+
+The preview runs at <http://127.0.0.1:4001/fastwork-portfolio/>. The project
+page is a preserved demo: do not redesign it or change its palette, fonts,
+copy, or behaviour. The only visual addition is the floating Portfolio link.
+
+All JavaScript is plain ESM with JSDoc types checked by `tsc`. Read
+`AGENTS.md` and the vendored `functional-design-skills` pack before changing
+a module boundary or the browser shell.
