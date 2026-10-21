@@ -1,0 +1,177 @@
+---
+name: functional-enforcing-consistency-boundaries
+description: Use when deciding what one transaction must cover, when two entities have to stay in step, or when identity and equality of domain values are unclear.
+license: MIT
+metadata:
+  pack: functional-design-skills
+  version: 3.3.0
+---
+
+# Enforcing Consistency Boundaries
+
+**In this pack:** [how much design a task warrants](../functional-design/references/calibration.md),
+[the notation](../functional-design/references/notation.md), and
+[syntax per language](../functional-design/SKILL.md#language-packs).
+
+## Overview
+
+Some rules must hold at every instant: no two bookings for one clinician
+overlap in time; a room is never booked twice for one slot. Others may
+lag: a patient's loyalty points can catch up with their paid treatments a
+second later. Deciding which is which, and drawing a boundary around each set of
+rules that must hold together, is what makes a system both correct and
+able to scale.
+
+The unit is the **aggregate**: a cluster of data with one entry point,
+whose invariants hold whenever a change to it completes. One aggregate is
+one transaction. Between aggregates, consistency is eventual, and that is
+a design decision to be made explicitly rather than a compromise.
+
+## When to use
+
+- Deciding what a single database transaction covers
+- Two records must stay in agreement and sometimes do not
+- Designing an update that touches several entities
+- A rule spans entities and nobody owns it
+- Deciding whether a type has identity or is a plain value
+
+Not for: drawing boundaries between subsystems, which is
+[functional-capturing-the-domain](../functional-capturing-the-domain/SKILL.md).
+
+## Identity and equality
+
+Two different kinds of domain type, with different equality:
+
+| Kind   | Equality                       | Example               |
+| ------ | ------------------------------ | --------------------- |
+| Entity | Same identifier, whatever else | `Booking`, `Patient`  |
+| Value  | Same contents, no identifier   | `Money`, `Address`    |
+
+Consequences worth acting on:
+
+- An entity's identifier is assigned once and never changes. Two bookings
+  with the same contents are still two bookings.
+- A value is replaced, never mutated. Changing a patient's address means
+  a new `Address` value, not an edit to the old one.
+- Do not give a value an identifier because storage wants a primary key.
+  That is a storage concern; map it at the edge.
+
+## Core rules
+
+1. Default. **List the invariants first.** Write each rule as a sentence. "No
+   two bookings for one clinician overlap in time." A shape that enforces no
+   rule, such as a read-only view or a configuration record, has none to list
+   and is not an aggregate;
+   [worked-read-model.md](../functional-crossing-io-boundaries/references/worked-read-model.md)
+   works one through.
+2. Rule. **Group by invariant, not by relationship.** Data that must be
+   consistent together lives in the same aggregate. A foreign key is not a
+   reason to group.
+3. Rule. **One entry point per aggregate.** All changes go through the root;
+   nothing reaches inside to modify a part.
+4. Rule. **One aggregate, one transaction.** If an operation must change two
+   aggregates atomically, either the boundary is wrong or the rule is eventual.
+5. Rule. **Reference other aggregates by identifier**, never by holding their
+   value. Holding it invites updating it.
+6. Default. **Keep aggregates small.** The smallest cluster that keeps its
+   invariants is the right one; large aggregates serialise unrelated work. Too
+   small shows as two aggregates that are always written in one transaction, or
+   as a rule that a service enforces because no aggregate owns it; then merge
+   them, or move the rule.
+7. Rule. **Say what happens between aggregates.** An event, a retry, a
+   reconciliation. "Eventually consistent" without a mechanism is a bug with a
+   name.
+
+## Pattern
+
+Boundary drawn around a relationship:
+
+```text
+-- one aggregate holding a patient and every booking they ever made
+type Patient = { id: PatientId, profile: Profile,
+                 bookings: List<Booking> }
+```
+
+Confirming one booking now loads and rewrites every booking. Two bookings
+confirmed at once conflict, though they share no rule. Nothing here needs
+to be consistent across one patient's bookings.
+
+Boundary drawn around invariants:
+
+```text
+-- aggregate: a clinician's day, because the no-overlap rule spans every
+-- booking made into it
+type ClinicianDay = { clinician: ClinicianId, day: Date,
+                      allocations: List<Allocation> }
+type Allocation = { booking: BookingId, slot: TimeRange }
+allocate : Allocation -> ClinicianDay -> Result<ClinicianDay, Overlap>
+
+-- separate aggregate: the booking, referenced above by identifier
+type Booking = { id: BookingId, patient: PatientId,
+                 treatments: NonEmptyList<BookedTreatment> }
+
+-- separate aggregate: the patient, referenced by identifier
+type Patient = { id: PatientId, profile: Profile,
+                 credit: CreditLimit }
+```
+
+The overlap rule holds inside the clinician's day, in its own transaction.
+Bookings into different clinicians' days do not conflict. The credit-limit
+rule spans the patient and the booking, so it becomes an explicit step in
+the workflow, with an explicit answer for what happens when it is violated
+after the fact.
+
+## Rules that span aggregates
+
+When a rule involves two aggregates, choose one and record why:
+
+| Option               | When it fits                             |
+| -------------------- | ---------------------------------------- |
+| Merge the aggregates | The rule is truly instantaneous and the  |
+|                      | combined size stays small                |
+| Check then act       | A stale read is acceptable; the risk is  |
+|                      | small and correctable                    |
+| Reserve then confirm | Double-booking must not happen; take a   |
+|                      | short-lived claim first                  |
+| Compensate after     | Violations are rare and reversible       |
+| Move the rule        | The rule belongs to a third concept that |
+|                      | should own both sides                    |
+
+Whichever is chosen, write it down where the workflow is defined. An
+undocumented choice here reads as an oversight to the next developer, who
+will then "fix" it.
+
+## Red flags
+
+- A transaction that writes three tables from unrelated concepts
+- An aggregate loaded in full to change one field
+- Two aggregates that always change together
+- A domain type holding another entity's whole value, not its identifier
+- An invariant enforced in a service rather than by the type that owns it
+- Concurrent operations conflicting although they share no rule
+- A value type with an identifier field that no rule uses
+
+## Common mistakes
+
+- **Aggregates that follow the schema.** Foreign keys describe storage,
+  not invariants.
+- **One giant aggregate for safety.** It guarantees consistency and
+  destroys concurrency, and it still cannot span services.
+- **Eventual consistency by accident.** If nobody chose it, nobody built
+  the reconciliation either.
+- **Enforcing an invariant in a caller.** If a rule is not enforced by
+  the aggregate's own functions, it is optional.
+- **Confusing an aggregate with a bounded context.** A context holds many
+  aggregates; an aggregate is a transaction boundary inside one.
+
+## Related skills
+
+- [functional-capturing-the-domain](../functional-capturing-the-domain/SKILL.md)
+- [functional-making-illegal-states-unrepresentable](../functional-making-illegal-states-unrepresentable/SKILL.md)
+- [functional-crossing-io-boundaries](../functional-crossing-io-boundaries/SKILL.md)
+- [functional-designing-workflow-pipelines](../functional-designing-workflow-pipelines/SKILL.md)
+
+## Further reading
+
+- [aggregates.md](references/aggregates.md) gives the procedure for
+  finding a boundary, sizing it, and handling rules that cross it.

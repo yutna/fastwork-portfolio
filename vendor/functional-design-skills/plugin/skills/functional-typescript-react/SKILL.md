@@ -1,0 +1,192 @@
+---
+name: functional-typescript-react
+description: Use when a React component's props grow, when an effect computes state that render could derive, or when deciding what belongs in a global store and what a selector should.
+license: MIT
+metadata:
+  pack: functional-design-skills
+  version: 3.3.0
+---
+
+# Functional React
+
+## Overview
+
+React is already a functional architecture: a component is a pure
+function from props and state to a description of the interface, and the
+framework performs the effects. The design rules in this pack apply
+directly, and the common React problems are the same problems they
+describe: state that duplicates a fact, effects tangled with decisions,
+and components whose interface is as complicated as their body.
+
+This pack covers React itself. The TypeScript it is written in is in
+[functional-typescript](../functional-typescript/SKILL.md), and the
+server and client split a meta-framework adds is in
+[functional-typescript-react-nextjs](../functional-typescript-react-nextjs/SKILL.md).
+
+**Check the installed version before writing code.** The shapes below
+target React 19.
+
+## When to use
+
+- Designing a component, a hook, or a custom hook's interface
+- Deciding whether a value belongs in state or is derived
+- Modelling what a screen can be showing
+- Keeping a business rule out of an event handler
+- Reviewing React code against the design rules
+
+Not for: visual design, framework configuration, or the server and
+client boundary.
+
+## Core rules
+
+1. Rule. **Render is a pure function.** Same props and state, same output. No
+   fetching, no writing, no mutation, no clock and no random number during
+   render. This is about a component React may render again at any time. An async
+   server component runs once for a request and is shell: it reads, then returns
+   markup from the values it read, as
+   [functional-typescript-react-nextjs](../functional-typescript-react-nextjs/SKILL.md)
+   has it.
+2. Default. **Do not store what you can derive.** Duplicated state is duplicated
+   knowledge, and it goes stale. A value that must keep its answer after its
+   inputs change, such as the price a booking was confirmed at, is not derived:
+   store it, under a name that says it is a snapshot.
+3. Default. **`useEffect` is for synchronising with something outside React**,
+   not for reacting to your own state. Before writing one, name the outside
+   system it keeps in step, such as a subscription, a timer, an element to focus
+   or an analytics call. An effect that can name only other React state is
+   deleted, and its value is computed while rendering or set in the event
+   handler.
+4. Default. **Model interface state as a choice type**, not as several booleans.
+   `isLoading`, `error`, and `data` together permit states no screen has.
+   Booleans that vary independently stay booleans: where every combination is a
+   screen that exists, there is no illegal state to remove.
+5. Rule. **Keep the decision pure and let the framework act.** A reducer, or a
+   plain function, decides; the component or the action performs. A handler that
+   hands its values on unread applies no rule, and has no decision to move out.
+6. Default. **Push data fetching to the edge**: a loader, a route, or a query
+   layer, not into the middle of a component tree. A query that depends on state
+   only one component holds, such as the text of a type-ahead, is fetched from
+   that component, through the query layer where the project has one: lifting
+   that state to a route would be the mistake of lifting state too high.
+7. Judgement. **A component's props are its interface.** Deep components take
+   few props and hide a lot; shallow ones take twenty and hide nothing.
+
+## Pattern
+
+Booleans that permit impossible screens:
+
+```tsx
+const [isLoading, setIsLoading] = useState(false);
+const [error, setError] = useState<string | null>(null);
+const [bookings, setBookings] = useState<Booking[]>([]);
+// loading and error at once? data with an error? empty and not loaded?
+```
+
+A choice type with one state at a time:
+
+```tsx
+type ScreenState =
+  | { tag: "Loading" }
+  | { tag: "Failed"; error: FetchError }
+  | { tag: "Loaded"; bookings: NonEmptyArray<Booking> }
+  | { tag: "Empty" };
+
+const view = (s: ScreenState) => {
+  switch (s.tag) {
+    case "Loading":
+      return <Spinner />;
+    case "Failed":
+      return <ErrorPanel error={s.error} />;
+    case "Loaded":
+      return <BookingTable bookings={s.bookings} />;
+    case "Empty":
+      return <EmptyState />;
+    default:
+      return assertNever(s);
+  }
+};
+```
+
+Four states, each with exactly its own data, and a compile error when a
+fifth is added. `Loaded` holds a `NonEmptyArray`, so it cannot be empty,
+and `Empty` is not a second way to say it: an empty list can only be
+`Empty`. This is
+[functional-making-illegal-states-unrepresentable](../functional-making-illegal-states-unrepresentable/SKILL.md)
+applied to a screen.
+
+The choice between `Loaded` and `Empty` is made in one function, called
+while rendering with the list as it was fetched, with `nonEmpty` from
+[functional-typescript](../functional-typescript/references/unions-and-exhaustiveness.md#non-empty-lists).
+Emptiness is derived there and never stored:
+
+```tsx
+const screenOf = (bookings: readonly Booking[]): ScreenState => {
+  const result = nonEmpty(bookings);
+  return result.ok
+    ? { tag: "Loaded", bookings: result.value }
+    : { tag: "Empty" };
+};
+```
+
+## Derived, not stored
+
+```tsx
+// stored: two facts that can disagree
+const [items, setItems] = useState<Item[]>([]);
+const [total, setTotal] = useState(0);
+```
+
+```tsx
+// derived: one fact
+const [items, setItems] = useState<readonly Item[]>([]);
+const total = items.reduce((sum, i) => sum + i.price, 0);
+```
+
+Store the minimum from which everything else follows. Reach for
+memoisation only when a measurement says the derivation is expensive; the
+correctness argument comes first, and the performance argument rarely
+does. See
+[state-and-derivation.md](references/state-and-derivation.md).
+
+## Red flags
+
+- `useEffect` that sets state derived from other state
+- Three booleans describing one screen state
+- A component with more than about seven props
+- Fetching inside a component several levels deep
+- A `useEffect` with a dependency array the author had to fight
+- Mutating props, state, or an array from a hook
+- Business rules inside a component or an event handler
+- `any` in a props type
+
+## Common mistakes
+
+- **Effects as data flow.** An effect that watches state to compute other
+  state is a derivation written the hard way, and it renders twice.
+- **Lifting state too high.** State that only one subtree uses, held at
+  the root, makes every change re-render everything and couples unrelated
+  components.
+- **Prop drilling a value nobody in between reads.** That is the
+  pass-through variable smell. See
+  [functional-hiding-information](../functional-hiding-information/SKILL.md).
+- **Putting rules in handlers.** A discount calculated in `onClick`
+  cannot be tested or reused. Move it to a pure function.
+- **Reaching for a global store first.** Most state is either server data
+  or local to one subtree.
+
+## Related skills
+
+- [functional-making-illegal-states-unrepresentable](../functional-making-illegal-states-unrepresentable/SKILL.md)
+- [functional-separating-pure-core-from-shell](../functional-separating-pure-core-from-shell/SKILL.md)
+- [functional-designing-deep-modules](../functional-designing-deep-modules/SKILL.md)
+- [functional-typescript](../functional-typescript/SKILL.md)
+- [functional-typescript-react-nextjs](../functional-typescript-react-nextjs/SKILL.md)
+
+## Further reading
+
+- [state-and-derivation.md](references/state-and-derivation.md) covers
+  what to store, reducers as state machines, where a query library
+  belongs, and when an effect is right.
+- [stores.md](references/stores.md) covers what belongs in a global
+  store and what does not, selectors and derived data, normalising,
+  and writing nested updates through a draft.

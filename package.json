@@ -1,0 +1,31 @@
+{
+  "name": "fastwork-portfolio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Selected web work by Yutthana — a Jekyll portfolio for GitHub Pages.",
+  "engines": {
+    "node": "24.22.1"
+  },
+  "scripts": {
+    "build": "bundle exec jekyll build",
+    "serve": "bundle exec jekyll serve --host 127.0.0.1 --port 4001 --no-watch",
+    "preview": "node scripts/serve-site.mjs",
+    "capture": "node scripts/capture.mjs",
+    "lint:js": "tsc --noEmit",
+    "check:static": "node scripts/check-site.mjs",
+    "check:html": "html-validate \"_site/**/*.html\"",
+    "test:unit": "node --test tests/unit/*.test.mjs",
+    "test:e2e": "playwright test",
+    "test": "npm run lint:js && npm run check:static && npm run check:html && npm run test:unit && npm run test:e2e",
+    "test:all": "npm run build && npm test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.64.1",
+    "@types/node": "24.19.2",
+    "cheerio": "1.2.0",
+    "html-validate": "11.17.0",
+    "typescript": "7.0.2"
+  }
+}

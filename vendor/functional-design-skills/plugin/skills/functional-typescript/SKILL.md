@@ -1,0 +1,251 @@
+---
+name: functional-typescript
+description: Use when applying functional design in TypeScript without a functional library, including branded types, discriminated unions, and hand-rolled Result.
+license: MIT
+metadata:
+  pack: functional-design-skills
+  version: 3.3.0
+---
+
+# Functional TypeScript
+
+## Overview
+
+TypeScript's type system can express nearly everything the core skills
+ask for: discriminated unions give choice types, branded types give
+single-case wrappers, and exhaustiveness checking through `never` turns a
+missed case into a compile error.
+
+What it does not do by default is stop you opting out. The value of this
+pack depends on a strict configuration and on a few habits that keep the
+escape hatches closed.
+
+## When to use
+
+- A TypeScript project using the standard library only
+- Deciding how to express a domain type, a Result, or a pipeline
+- Reviewing TypeScript against the core design rules
+
+Not for: projects built on Effect, which have
+[functional-typescript-effect](../functional-typescript-effect/SKILL.md);
+or ts-pattern matching, which has
+[functional-typescript-ts-pattern](../functional-typescript-ts-pattern/SKILL.md).
+
+## Notation mapping
+
+| Neutral notation    | TypeScript                                          |
+| ------------------- | --------------------------------------------------- |
+| Record type         | `type X = { readonly a: A }`                        |
+| Choice type         | Discriminated union on a literal field              |
+| Single-case wrapper | Branded type plus a parser                          |
+| `Option<T>`         | `T \| undefined`, or a `Maybe` union                |
+| `Result<T, E>`      | `{ ok: true; value: T } \| { ok: false; error: E }` |
+| `NonEmptyList<T>`   | `readonly [T, ...T[]]`                              |
+| `A -> B -> C`       | `(a: A) => (b: B) => C`                             |
+| `Async<T>`          | `Promise<T>`                                        |
+| Exhaustive match    | `switch` with a `never` check                       |
+
+## Configuration first
+
+None of this works without these compiler options:
+
+```json
+{
+  "strict": true,
+  "noUncheckedIndexedAccess": true,
+  "exactOptionalPropertyTypes": true,
+  "noImplicitOverride": true,
+  "noFallthroughCasesInSwitch": true,
+  "erasableSyntaxOnly": true
+}
+```
+
+`strict` is the minimum. `noUncheckedIndexedAccess` is what stops
+`array[0]` claiming to be defined, which is the most common source of
+runtime undefined in otherwise well-typed code. `erasableSyntaxOnly`
+needs TypeScript 5.8; on anything older `tsc` rejects the config file,
+so check the installed version before pasting the block.
+
+## Core rules
+
+1. Rule. **`readonly` everywhere in domain types**, including array fields:
+   `readonly BookedTreatment[]`.
+2. Default. **Brand every domain primitive**, and export only the parser. Leave
+   a value unbranded when it lives and dies inside one function, or when config,
+   a tenant or an admin decides its shape.
+3. Rule. **Discriminate unions on a literal field**, one field name across the
+   codebase.
+4. Rule. **Exhaust with `never`**, never with a permissive `default`.
+5. Rule. **No `any`, no non-null `!`, no unchecked `as`.** Each is a hole in
+   every guarantee above it. An `as` is checked when the test that makes it
+   true stands directly before it, which is what a parser or a smart
+   constructor is: the one place the cast is written.
+6. Rule. **Return `Result`, do not throw**, for expected failures.
+7. Rule. **Type the boundary separately.** DTO types are their own types, with a
+   parse step between them and the domain. A view that only reads and enforces
+   no rule has one type and no parse, as rule 1 of
+   [functional-crossing-io-boundaries](../functional-crossing-io-boundaries/SKILL.md)
+   has it.
+
+## Pattern
+
+```ts
+// money.ts
+declare const brand: unique symbol;
+type Brand<T, B extends string> = T & { readonly [brand]: B };
+
+export type Satang = Brand<number, "Satang">;
+export type NotSatang = { readonly tag: "NotSatang"; readonly value: number };
+
+export const satang = (n: number): Result<Satang, NotSatang> =>
+  Number.isInteger(n) && n >= 0
+    ? ok(n as Satang)
+    : err({ tag: "NotSatang", value: n });
+```
+
+```ts
+// payment.ts
+export type Payment =
+  | { readonly tag: "Cash" }
+  | { readonly tag: "Card"; readonly number: CardNumber }
+  | { readonly tag: "Transfer"; readonly bank: BankCode };
+
+export const describe = (p: Payment): string => {
+  switch (p.tag) {
+    case "Cash":
+      return "cash";
+    case "Card":
+      return maskCard(p.number);
+    case "Transfer":
+      return p.bank;
+    default:
+      return assertNever(p);
+  }
+};
+
+const assertNever = (x: never): never => {
+  throw new Error(`unhandled case: ${JSON.stringify(x)}`);
+};
+```
+
+Adding a case to `Payment` makes `assertNever` a compile error at every
+site that must be updated. That is the mechanism the core skills rely on;
+protect it by never writing a permissive `default`.
+
+## Result
+
+```ts
+export type Result<T, E> =
+  | { readonly ok: true; readonly value: T }
+  | { readonly ok: false; readonly error: E };
+
+export const ok = <T>(value: T): Result<T, never> => ({ ok: true, value });
+export const err = <E>(error: E): Result<never, E> => ({ ok: false, error });
+
+export const map =
+  <T, U>(f: (t: T) => U) =>
+  <E>(r: Result<T, E>): Result<U, E> =>
+    r.ok ? ok(f(r.value)) : r;
+
+export const bind =
+  <T, U, E2>(f: (t: T) => Result<U, E2>) =>
+  <E>(r: Result<T, E>): Result<U, E | E2> =>
+    r.ok ? f(r.value) : r;
+```
+
+`bind` widening the error to `E | E2` is what lets a pipeline accumulate
+its failure type honestly. That union is the chain's type before it is
+lifted. A workflow's signature carries one choice type, built with
+`mapError`, and [result-type.md](references/result-type.md) shows the
+lifting.
+
+## Parsing at the boundary
+
+Hand-written parsers are fine for a handful of types. Past that, a schema
+library is the usual answer, and the rule that matters is which type it
+produces. The example is Zod 4; check the installed major, because the
+spelling of several checks changed there.
+
+```ts
+// the schema's inferred type is the DTO, not the domain type
+const BookingDto = z.object({
+  id: z.uuid(),
+  treatments: z.array(BookedTreatmentDto).min(1),
+  status: z.enum(["held", "confirmed", "cancelled"]),
+});
+
+// one mapping into the domain, where the guarantees live
+const toBooking = (
+  dto: z.infer<typeof BookingDto>,
+): Result<Booking, MapError> => {
+  /* ... */
+};
+```
+
+Letting the inferred type _be_ the domain model reintroduces every wire
+compromise: nullable fields, string enums, plain arrays. `min(1)` is a
+case in point: the schema checks it and the inferred type is still a
+plain array, so the non-empty list is built in `toBooking`. Some
+libraries can brand and constrain enough to close most of that gap; see
+[schema-libraries.md](references/schema-libraries.md) for which, and for
+how the four common choices compare.
+
+## When not to model a shape
+
+TypeScript's type system is good enough that the default is unambiguous:
+model the shape. The exception is narrow and worth knowing, because
+getting it wrong produces the worst kind of type — one with every field
+optional.
+
+When the field set comes from config, varies per tenant, or is decided by
+an admin, there is no compile-time set of cases to model. Use
+`Record<FieldKey, JsonValue>` behind a parsed wrapper, keep the envelope
+around it fully typed, and pay the costs listed in
+[functional-choosing-types-or-plain-data](../functional-choosing-types-or-plain-data/SKILL.md).
+Reach for `z.record()` rather than a generated union of every field any
+clinic has ever added.
+
+## Red flags
+
+- `any`, `as any`, `@ts-ignore`, or `@ts-expect-error` in domain code
+- The non-null assertion `!`
+- `as` used to construct a branded value outside its module
+- A `default` branch that returns a value instead of `assertNever`
+- `enum` used where a union of string literals would do
+- Mutable array or object fields in a domain type
+- `interface` for a domain value, which is open to declaration merging
+- A DTO type reused as a domain type
+
+## Common mistakes
+
+- **Branding without a parser.** A brand you can cast into is
+  documentation, not a guarantee. Export the parser, not the cast.
+- **`Partial<T>` for a draft.** Give the draft its own type with its own
+  rules. See
+  [when-to-validate-instead.md](../functional-making-illegal-states-unrepresentable/references/when-to-validate-instead.md).
+- **`unknown` left unnarrowed at the boundary.** Parse it into a domain
+  type immediately.
+- **Structural typing collisions.** Two unbranded types with the same
+  shape are the same type to the compiler.
+- **`readonly` only at the top level.** `readonly treatments: BookedTreatment[]`
+  still allows `treatments.push`.
+- **Using exceptions for expected failures**, then catching `unknown` and
+  guessing.
+
+## Related skills
+
+- [functional-modeling-with-algebraic-types](../functional-modeling-with-algebraic-types/SKILL.md)
+- [functional-constraining-primitive-values](../functional-constraining-primitive-values/SKILL.md)
+- [functional-handling-errors-with-results](../functional-handling-errors-with-results/SKILL.md)
+- [functional-crossing-io-boundaries](../functional-crossing-io-boundaries/SKILL.md)
+
+## Further reading
+
+- [branded-types.md](references/branded-types.md) covers brands, parsers,
+  and keeping the cast private.
+- [unions-and-exhaustiveness.md](references/unions-and-exhaustiveness.md)
+  covers discriminated unions, narrowing, and state machines.
+- [result-type.md](references/result-type.md) covers the Result helpers,
+  async, and boundary conversion.
+- [schema-libraries.md](references/schema-libraries.md) compares Zod,
+  Valibot, ArkType and TypeBox for boundary parsing.

@@ -1,0 +1,44 @@
+.portfolio-return {
+    position: fixed;
+    z-index: 200;
+    left: max(14px, env(safe-area-inset-left));
+    bottom: max(14px, env(safe-area-inset-bottom));
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 14px;
+    border: 3px solid var(--ink, #191410);
+    border-radius: 4px 10px 5px 8px;
+    background: var(--paper, #FFF6E3);
+    color: var(--ink, #191410);
+    box-shadow: 4px 4px 0 var(--ink, #191410);
+    font-family: "Anuphan", sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.portfolio-return:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 5px 5px 0 var(--ink, #191410);
+}
+
+.portfolio-return:active {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+}
+
+.portfolio-return:focus-visible {
+    outline: 3px solid var(--chili, #D8331F);
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .portfolio-return { transition: none; }
+}
+
+@media print {
+    .portfolio-return { display: none; }
+}

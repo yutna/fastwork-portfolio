@@ -1,0 +1,214 @@
+---
+name: functional-testing-functional-code
+description: Use when writing tests for functional code, when tests need heavy mocking or a database, when deciding what to test, or turning a claimed law into a property.
+license: MIT
+metadata:
+  pack: functional-design-skills
+  version: 3.3.0
+---
+
+# Testing Functional Code
+
+**In this pack:** [how much design a task warrants](../functional-design/references/calibration.md),
+[the notation](../functional-design/references/notation.md), and
+[syntax per language](../functional-design/SKILL.md#language-packs).
+
+## Overview
+
+Testing a functional system is mostly easy and occasionally hard, and the
+split is exactly the split between core and shell. Pure functions are the
+easiest things in software to test: call them with values, assert on
+values, no setup and no teardown. Effects are genuinely hard to test, so
+the design goal is to have few of them, all at the edges.
+
+That makes test difficulty a design instrument. When a business rule is
+hard to test, the test is not the problem; the rule is entangled with an
+effect, and the fix is in the design.
+
+## When to use
+
+- Writing tests for a workflow, a domain type, or a pipeline
+- A test needs a mocking framework to exercise a business rule
+- Deciding how much to test and at which level
+- A test suite is slow, brittle, or ignored
+- Choosing between example tests and property tests
+
+Not for: deciding what the design should be, though the tests will tell
+you when it is wrong.
+
+## Core rules
+
+1. Rule. **Test the core with values.** No stub, no fake, and no setup
+   beyond building the inputs. A test runner is not what this rule
+   forbids. If a core test needs more, fix the design first.
+2. Default. **Test the shell with a few integration tests.** Prove the wiring,
+   the mapping, and the transactions; do not re-test business rules there.
+3. Default. **Stand in for capabilities with stubs, or with a fake for a shared
+   store.** A stub is a one-line function that stands in for a capability in one
+   test. A fake is a maintained in-memory implementation that many tests share,
+   held to the real adapter by a contract test. Stub where a test needs one or
+   two capabilities answered. Build a fake once the tests of several handlers
+   need the same store to remember what was written. A handler that reads, calls
+   the core and writes, with no branch of its own, needs neither: the
+   integration tests cover it. A dependency that needs a mocking library is too
+   wide; see
+   [functional-applying-solid-functionally](../functional-applying-solid-functionally/SKILL.md).
+4. Rule. **Assert on returned values and stored state, not on
+   interactions.** A test that checks which functions were called, or
+   how many times, is testing the implementation.
+5. Default. **Use properties where the rule is general.** Round trips,
+   invariants, and totality are better stated as properties than as examples.
+   Examples are better where the rule has a named threshold, where the case is a
+   regression or one an expert named, and where the property would only restate
+   the implementation.
+6. Default. **Test the design, not the coverage number.** A suite that covers
+   every line and no failure mode is worse than an honest smaller one.
+7. Judgement. **Let a hard test change the design.** Difficulty is
+   information. A hard test reopens the module's interface decision,
+   which is the level where design happens. What tips it: patch the
+   code locally only when the interface is already right and the test is
+   hard for a reason unrelated to it.
+
+## What to test where
+
+| Subject                      | Kind of test                              |
+| ---------------------------- | ----------------------------------------- |
+| Smart constructor            | Examples plus a property                  |
+| Pure decision or calculation | Examples, one per rule                    |
+| State transition             | Table of legal and illegal                |
+| Workflow pipeline            | Examples with plain values                |
+| Handler, reads between rules | Stubs, or a shared fake, per path         |
+| Boundary mapping             | Round-trip property                       |
+| Storage adapter              | Integration, few                          |
+| Transport adapter            | Integration, few                          |
+| Concurrency                  | Simulated conflict; real only for storage |
+
+## Pattern
+
+Untestable without infrastructure:
+
+```text
+-- needs a database, a clock, and a mail server to check one rule
+test "refunds over sixty days are rejected" =
+  seedDatabase ...
+  freezeClock ...
+  startMailServer ...
+  expect (processRefund request) toBe rejected
+```
+
+Testable with values:
+
+```text
+test "refunds over sixty days are rejected" =
+  let booking = bookingConfirmedOn (daysBefore now 61)
+  in expect (decideRefund now booking request)
+       toBe (Error TooOld)
+```
+
+The second runs in microseconds, has no setup, and fails for exactly one
+reason. Achieving it is a design change, not a testing technique. See
+[functional-separating-pure-core-from-shell](../functional-separating-pure-core-from-shell/SKILL.md).
+
+## Stubs, not mocks
+
+A capability is a function type, so a stub, as rule 3 defines it, is a
+function. The stub
+belongs to a handler, since only a handler takes a capability. Here the
+handler reads a catalogue that a rule names, as in
+[functional-parameterizing-dependencies](../functional-parameterizing-dependencies/SKILL.md):
+
+```text
+let stubLoadCatalogueById = \_ -> done (Ok standardCatalogue)
+
+test "prices a booking from the catalogue its rule names" =
+  expect (priceFromCatalogue stubLoadCatalogueById validBooking)
+    toFinishWith (Ok pricedAtStandardRates)
+```
+
+`stubLoadCatalogueById` has the type `LoadCatalogueById`, which is
+`CatalogueId -> AsyncResult<Catalogue, StoreError>`, so the test
+compiles only if the handler asks for what it says. No framework, no
+expectations, no verification of calls. If a test needs to assert that a
+dependency was called, ask what observable outcome that call produces,
+and assert on that instead. Where the call itself is the outcome, return
+it as an instruction and assert on the instruction.
+
+## Properties worth stating
+
+| Property          | Statement                              |
+| ----------------- | -------------------------------------- |
+| Round trip        | `parse (render x) == Ok x`             |
+| Totality          | Never raises for any input of the type |
+| Invariant         | The constructor's rule always holds    |
+| Idempotence       | Applying twice equals applying once    |
+| Monoid laws       | Identity and associativity             |
+| Model equivalence | Matches a slow obvious implementation  |
+
+Each row is a law: a claim that holds for every value, not for the three
+anyone thought of. That is what makes it worth a property rather than an
+example, and it is also where properties come from. When an operation
+claims something -- that order does not matter, that applying it twice
+is the same as once, that one function undoes another -- write the claim
+as an equation over arbitrary values before writing any test. If the
+equation will not come out, the operation does not mean what you thought
+it meant, and that is the finding rather than the test.
+
+See
+[property-testing.md](references/property-testing.md).
+
+## On test-driven development
+
+Writing a test first is a good way to work: it forces you to use the
+interface before implementing it, and it produces a regression suite as a
+side effect. What it does not do is produce a design. Tests drive
+attention to units, one at a time, and a system designed one unit at a
+time acquires the structure of its increments.
+
+The workable combination: design the module's interface deliberately first,
+using the techniques in
+[functional-designing-deep-modules](../functional-designing-deep-modules/SKILL.md)
+and
+[functional-writing-useful-comments](../functional-writing-useful-comments/SKILL.md);
+then work test-first inside that interface. Keep design decisions at the level
+of the module, not at the level of the next failing test.
+
+## Red flags
+
+- A mocking framework used to test a business rule
+- A test that asserts a function was called
+- A test suite that needs a container to run at all
+- Tests changed to match the code after a change
+- One test asserting six unrelated things
+- Coverage as the reported measure of quality
+- A rule with no test because "it is obvious"
+
+## Common mistakes
+
+- **Testing through the shell.** Slow, brittle, and it does not tell you
+  which rule broke.
+- **Mocking what you do not own.** Wrap the third party in a function
+  type and stub that instead.
+- **Asserting on interactions.** It welds the test to the implementation,
+  so refactoring breaks tests without breaking behaviour.
+- **Property tests with no shrinking or no seed control.** A failure you
+  cannot reproduce is a rumour.
+- **Testing generated code or the framework.** Test what you decided,
+  not what a library does. A mapping you wrote is something you decided.
+- **Skipping the failure cases.** Error paths are the least exercised
+  code in production and the most worth testing.
+
+## Related skills
+
+- [functional-separating-pure-core-from-shell](../functional-separating-pure-core-from-shell/SKILL.md)
+- [functional-parameterizing-dependencies](../functional-parameterizing-dependencies/SKILL.md)
+- [functional-making-illegal-states-unrepresentable](../functional-making-illegal-states-unrepresentable/SKILL.md)
+- [functional-reviewing-functional-design](../functional-reviewing-functional-design/SKILL.md)
+
+## Further reading
+
+- [property-testing.md](references/property-testing.md) names the
+  library for each stack, then covers choosing properties, generators,
+  shrinking, and testing a lifecycle against generated command
+  sequences.
+- [testing-the-shell.md](references/testing-the-shell.md) covers what to
+  cover in integration tests, and how few are enough.

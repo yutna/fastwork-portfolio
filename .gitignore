@@ -17,6 +17,25 @@ Thumbs.db
 *.log
 logs/
 
+# Build and test output
+_site/
+.jekyll-cache/
+.jekyll-metadata
+.sass-cache/
+artifacts/
+test-results/
+playwright-report/
+blob-report/
+*.tsbuildinfo
+
+# --- Node ---
+node_modules/
+
+# --- Ruby ---
+.bundle/
+vendor/bundle/
+vendor/cache/
+
 # --- Ruby (github/gitignore) ---
 *.gem
 *.rbc

@@ -1,0 +1,254 @@
+---
+name: functional-typescript-xstate
+description: Use when a lifecycle needs nested states, regions active at the same time, delayed transitions, or an actor per row, and whether a statechart beats a plain reducer.
+license: MIT
+metadata:
+  pack: functional-design-skills
+  version: 3.3.0
+---
+
+# Functional Statecharts with XState
+
+## Overview
+
+A statechart is a state machine plus four things a plain union does not
+have: states inside states, regions that are active at once, time as a
+first-class trigger, and actors whose lifetime it owns. Each is a real
+capability and each costs the same thing — the lifecycle stops being a
+function you can call with two arguments and becomes a library value.
+
+So this pack is mostly about the second half of that trade. The
+modelling itself is unchanged and lives in
+[functional-modeling-state-machines](../functional-modeling-state-machines/SKILL.md);
+the TypeScript is in
+[functional-typescript](../functional-typescript/SKILL.md).
+
+**Check the installed version before writing code.** The shapes below
+target XState 5, which reorganised everything around actors and renamed
+`interpret` to `createActor`; version 4 spells most of this differently.
+
+## When to use
+
+- A lifecycle with states inside states
+- Two parts of one lifecycle that are active at the same time
+- A transition that fires because time passed, not because something
+  happened
+- One machine per row, each with its own lifetime
+- Deciding whether any of that is true yet
+
+What a person describes tells you which of these they have:
+
+- Parts that each have their own steps are hierarchy: a compound
+  state, one level down for each part.
+- Parts that run or finish in either order are parallel regions: both
+  are active at once, and the whole is done when every region is.
+- A timeout or a delay is time as a trigger: a delayed transition,
+  where a reducer would compare a stored timestamp each time it runs.
+
+A lifecycle with any of these is what a statechart adds and a union
+does not have. When you recommend one, name its price in the same
+answer, as the next section states it: the states stop being cases of a
+type, so the compiler no longer reports a state left unhandled.
+
+Not for: a lifecycle a discriminated union and a transition function
+already describe. That is most of them.
+
+## When a union is still the answer
+
+Ask which of the four the lifecycle actually has. If the answer is
+none, a union plus a pure `(state, event) => state` is smaller, needs
+no library, and can be called from a test with two arguments.
+
+The cost of reaching too early is specific: the states become strings
+inside a config object rather than cases of a type, so the compiler
+stops telling you about a state you forgot to handle. You have traded
+an exhaustiveness check for features you are not using. A machine also
+drops an event that the current state has no transition for, and tells
+the sender nothing. Where the sender has to learn of the refusal, as
+rule 4 of
+[functional-modeling-with-algebraic-types](../functional-modeling-with-algebraic-types/SKILL.md)
+asks of a table over a state and a command, it asks
+`snapshot.can(event)` before it sends, and a test covers the pairs that
+are refused.
+
+## Notation mapping
+
+| Neutral notation   | XState                                   |
+| ------------------ | ---------------------------------------- |
+| Choice of states   | `states` in the machine config           |
+| Transition         | `on: { EVENT: { target } }`              |
+| Guard              | `guard` naming a predicate in `setup`    |
+| Instruction        | A named action or an invoked actor       |
+| Substates          | Nested `states` under a parent state     |
+| Concurrent regions | `type: 'parallel'`                       |
+| Time as a trigger  | `after: { holdWindow: { target } }`      |
+| Child actor        | `invoke` with `src`, `onDone`, `onError` |
+
+XState calls everything a machine receives an event. `HOLD` and
+`CONFIRM` are what the core calls commands, and an actor's answer,
+arriving through `onDone` or `onError`, is what it calls an event.
+
+## Core rules
+
+1. Rule. **The machine owns the lifecycle.** Nothing outside it decides
+   what state the thing it models is in, and no component keeps a second
+   copy of the state value to make rendering easier.
+2. Default. **Reach for a statechart only when a union falls short.** It falls
+   short when the lifecycle has states inside states, regions that are active at
+   once, a transition that time fires, or an actor whose lifetime the machine
+   owns. Without one of those you have taken on a library and lost
+   exhaustiveness.
+3. Rule. **Guards are pure predicates over context and event.** A guard
+   that reads a clock, a store, or the network is a transition
+   pretending not to be one.
+4. Rule. **Actions describe; the interpreter performs.** Keep the effect
+   in the actor or at the edge, so the machine stays a value that can be
+   stepped in a test.
+5. Default. **`invoke` for work with a lifetime, an action for work without
+   one.** Work has a lifetime when it can still be running after its state is
+   left: a request, a timer, a subscription. An invoked actor is cancelled when
+   its state is left, and work started any other way has no owner, which rule 8
+   of
+   [functional-making-effects-reliable](../functional-making-effects-reliable/SKILL.md)
+   makes a defect. An action is for a step that is over at once, such as an
+   `assign`.
+6. Rule. **Context is replaced, not mutated.** `assign` returns the new
+   value; writing through the draft is the mutation this pack exists to
+   remove.
+7. Default. **Test by stepping, not by running.** `transition` and
+   `initialTransition` give the next state and the actions without an
+   interpreter, timers, or waiting. Running an actor is for the few tests of the
+   wiring, which show that an invoked actor starts and that its answer comes
+   back as an event.
+
+## Pattern
+
+```ts
+import { setup, assign, fromPromise } from "xstate";
+
+type BookingContext = { readonly slot: SlotId | null };
+
+const heldSlot = (context: BookingContext): SlotId => {
+  if (context.slot === null) throw new Error("held without a slot");
+  return context.slot;
+};
+
+const bookingMachine = setup({
+  types: {
+    context: {} as BookingContext,
+    events: {} as { type: "HOLD"; slot: SlotId } | { type: "CONFIRM" },
+  },
+  delays: { holdWindow: 120_000 },
+  actors: {
+    requestConfirmation: fromPromise(
+      async ({ input }: { input: { slot: SlotId } }) =>
+        confirmHold(input.slot),
+    ),
+  },
+}).createMachine({
+  id: "booking",
+  initial: "browsing",
+  context: { slot: null },
+  states: {
+    browsing: {
+      on: {
+        HOLD: {
+          target: "held",
+          actions: assign({ slot: ({ event }) => event.slot }),
+        },
+      },
+    },
+    held: {
+      after: {
+        holdWindow: { target: "browsing", actions: assign({ slot: null }) },
+      },
+      on: { CONFIRM: { target: "confirming" } },
+    },
+    confirming: {
+      invoke: {
+        src: "requestConfirmation",
+        input: ({ context }) => ({ slot: heldSlot(context) }),
+        onDone: { target: "confirmed" },
+        onError: { target: "held" },
+      },
+    },
+    confirmed: { type: "final" },
+  },
+});
+```
+
+The hold expiring is `after`, not a `setTimeout` somebody has to
+remember to clear. The confirmation is `invoke`, so leaving
+`confirming` cancels it. Both are the features that justified the
+library; without them this is a union with extra ceremony.
+
+The timer moves the screen on, and the screen's lifecycle is what this
+machine owns. The hold itself is the server's: whether it has really
+expired is decided there, where the clock can be trusted, from the time
+it was taken.
+
+The chart guarantees a slot is in context whenever the machine is in
+`held`, but XState 5 types one context for every state, so the type says
+`SlotId | null` and cannot say more. `heldSlot` returns the slot or
+throws, which is how
+[functional-defining-errors-out-of-existence](../functional-defining-errors-out-of-existence/SKILL.md)
+treats a state that should be impossible; a cast would claim the same
+thing and check nothing.
+
+The `{} as T` inside `types` is how XState 5 is told a type, and it
+constructs nothing, so it is no licence to cast anywhere else.
+
+## Testing
+
+```ts
+import { transition, initialTransition } from "xstate";
+
+const [start] = initialTransition(bookingMachine);
+const [held] = transition(bookingMachine, start, { type: "HOLD", slot: s1 });
+
+expect(held.value).toBe("held");
+expect(held.context.slot).toBe(s1);
+```
+
+No interpreter and no clock. A delayed transition is tested by
+asserting the machine scheduled it, not by waiting for it.
+
+## Red flags
+
+- A machine with no hierarchy, no parallel region, no delay and no
+  invoked actor
+- A component holding a boolean that mirrors the machine's state
+- A guard that reads anything but its own arguments
+- An `assign` or a guard that performs an effect, where a named action
+  or an invoked actor would describe it
+- `setTimeout` beside a machine that has `after`
+- A test that sleeps
+
+## Common mistakes
+
+- **Adopting it for one screen.** A statechart is a shared vocabulary;
+  one machine in a codebase of reducers is a second idiom.
+- **Strings where a union would do.** A transition's `target` is a
+  string the compiler does not check: a misspelt one fails when the
+  machine is created, not when the file compiles. Reading the state with
+  `snapshot.matches()` is checked.
+- **Putting the domain in the machine.** Pricing, eligibility and
+  validation are pure functions the machine calls, not actions.
+- **An actor per row without a lifetime.** If nothing cancels it and
+  nothing waits for it, it is a promise with more machinery. See
+  [functional-making-effects-reliable](../functional-making-effects-reliable/SKILL.md).
+- **Storing derived data in context.** It goes stale exactly the way
+  stored derived state always does.
+
+## Related skills
+
+- [functional-modeling-state-machines](../functional-modeling-state-machines/SKILL.md)
+- [functional-typescript](../functional-typescript/SKILL.md)
+- [functional-managing-state-immutably](../functional-managing-state-immutably/SKILL.md)
+- [functional-separating-pure-core-from-shell](../functional-separating-pure-core-from-shell/SKILL.md)
+
+## Further reading
+
+- [machines.md](references/machines.md) covers hierarchy and parallel
+  regions, actors and their lifetimes, delays, and how a machine is
+  persisted and restored.

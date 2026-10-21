@@ -1,0 +1,205 @@
+---
+name: functional-typescript-react-nextjs
+description: Use when placing logic across the server and client boundary in Next.js, writing a Server Action, invalidating a cache after a mutation, or deciding what may cross.
+license: MIT
+metadata:
+  pack: functional-design-skills
+  version: 3.3.0
+---
+
+# Functional Next.js
+
+## Overview
+
+Next.js adds one thing to React that changes the design: a boundary
+between server and client, with a network in the middle. That boundary
+decides where the rules run and where the data is read, and each side of
+it has a core and a shell of its own. Where React lets you put a rule in
+the wrong place, this makes the wrong place cost a round trip, a
+serialisation, or a leaked secret.
+
+Everything about components, state and derivation is unchanged and
+lives in
+[functional-typescript-react](../functional-typescript-react/SKILL.md).
+This pack is only what the boundary adds.
+
+**Check the installed version before writing code.** The shapes below
+target the App Router on Next.js 16; the pages router puts the boundary
+somewhere else entirely.
+
+## When to use
+
+- Deciding whether something is a server component or a client one
+- Writing a Server Action, or the form that calls it
+- Choosing what data crosses the boundary and in what shape
+- Deciding where a cache is invalidated
+- Reviewing a change that moved logic across the boundary
+
+Not for: React itself, deployment, or routing configuration.
+
+## Core rules
+
+1. Rule. **The server and client boundary decides where rules and data
+   run.** Decisions about the business and data access on the server;
+   interaction on the client. A rule written twice, once for each side, is a
+   rule that will disagree with itself. The server owns the rule and sends
+   the client its answer, a boolean or a reason, not the inputs to judge for
+   itself. Where the screen checks a field the user is still editing, as a form
+   does while someone types, one pure function may run on both, and the server
+   runs it again and has the last word. A rule over a window, a policy or the
+   clock, such as how late a booking may be cancelled without a fee, stays
+   on the server and crosses as a boolean or a deadline. Each side still has
+   a core and a shell of its own: a reducer on the client is pure, and an
+   action on the server is a handler.
+2. Rule. **Anything crossing is a transfer type.** It is serialised, so it
+   is a plain record with no methods, no class instances, and no
+   invariants the other side is trusting. Parse it back into a domain
+   type on arrival. A value the other side only shows is outside that last
+   sentence: nothing is enforced on it, so there is nothing to parse it into.
+   See
+   [functional-crossing-io-boundaries](../functional-crossing-io-boundaries/SKILL.md).
+3. Rule. **The server never trusts the client.** A secret stays on the
+   server. An authorisation decision is made on the server each time it
+   matters; its answer may cross, for the screen to show, and the server
+   never takes that answer back as proof.
+4. Rule. **A Server Action is a public endpoint.** It can be called
+   directly, with any arguments, by someone who never loaded the page.
+   It works out who is calling, parses every field, and leaves the
+   workflow to decide whether this caller may do this, whatever the page
+   that rendered the form already checked.
+5. Rule. **A Server Action is a handler**: it reads, parses the form, calls
+   the pure workflow with values, performs what was decided, and returns the
+   result as data the form can render. Its failures are values in that result,
+   not thrown. An action that applies no rule has no workflow to call, and
+   returns its failures as values all the same. The order of reading and
+   deciding is the handler's default, and gives way where rule 2 of
+   [functional-separating-pure-core-from-shell](../functional-separating-pure-core-from-shell/SKILL.md)
+   says a handler's does.
+6. Default. **Server by default; client where there is interaction.** A
+   component is marked as client-side only when it needs state, an event
+   handler, or a browser API. The mark pulls its whole subtree across, so it
+   belongs as far down the tree as it can go.
+7. Default. **Revalidation is a decision about a cache, not about a
+   screen.** Name what became stale, invalidate that, and let the
+   rendering follow.
+8. Judgement. **An optimistic update is a second source of truth** for as
+   long as it is pending. Worth it when the operation almost always
+   succeeds and the user is waiting; not worth it when reconciling the
+   two costs more than the wait.
+
+## Pattern
+
+What belongs where:
+
+- **Server.** Data access and secrets, business rules and pricing,
+  authorisation decisions, composing the page's data.
+- **Client.** Interaction state, optimistic updates, animation and
+  focus, local and ephemeral form state.
+
+A Server Action written as a handler:
+
+```tsx
+"use server";
+
+import { updateTag } from "next/cache";
+
+export async function confirmBookingAction(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const session = await currentSession();
+  if (!session) return { tag: "SignedOut" };
+
+  const parsed = parseBookingForm(formData);
+  if (!parsed.ok) return { tag: "Invalid", errors: parsed.error };
+
+  const catalogue = await loadCatalogue();
+  if (!catalogue.ok) return { tag: "Unavailable" };
+
+  const now = new Date();
+  const decided = confirmBooking(catalogue.value, now, {
+    ...parsed.value,
+    patient: session.patient,
+    requestedBy: session.patient,
+  });
+  if (!decided.ok) {
+    return { tag: "Rejected", refusal: toRefusal(decided.error) };
+  }
+
+  const saved = await saveEvents(decided.value);
+  if (!saved.ok) return { tag: "Unavailable" };
+
+  updateTag(`bookings:${session.patient}`);
+  return { tag: "Confirmed", reference: confirmedReference(saved.value) };
+}
+```
+
+Work out who is calling, parse at the boundary, read the catalogue,
+decide with plain values, save what was decided, and return a value the
+form can render. The caller's identity comes from the session and never
+from the form: the action sets the patient and `requestedBy` from it,
+so a caller books for themselves and nobody else. Whether this patient
+may have this treatment in this slot is the workflow's to decide. What
+it refuses comes back as `Rejected`, mapped by `toRefusal` into a shape
+the form can show: the workflow's error type does not cross. The command
+is the one this form produces, one treatment in one slot, which is
+narrower than the core's `UnvalidatedBooking`;
+[server-boundary.md](references/server-boundary.md) has the form.
+
+`saveEvents` hands the events back, and `confirmedReference` reads the
+booking's reference out of the `BookingConfirmed` one.
+
+Once the write has happened, the action says what went stale.
+`updateTag` expires the patient's bookings at once, so the next render
+shows the new one; `revalidateTag` is the one for a change nobody is
+waiting to see. Both are in
+[server-boundary.md](references/server-boundary.md).
+
+The `(prevState, formData)` signature is what `useActionState`
+calls, so the client reads
+`useActionState(confirmBookingAction, { tag: "Idle" })` and gets the state,
+the form action, and a pending flag together — no second piece of state
+that can disagree with the first.
+
+## Red flags
+
+- A client component high in the tree with a server-only child below it
+- A domain object passed across the boundary rather than a parsed record
+- A rule written twice, once for each side, so that the screen and the
+  server agree
+- A Server Action that takes who is calling, or what they may do, from
+  its arguments
+- A permission enforced only by leaving the button out
+- A Server Action that throws instead of returning a failure case
+- Revalidating everything because it is hard to say what went stale
+
+## Common mistakes
+
+- **Client components by default.** The mark spreads downward, so one
+  careless `"use client"` near the root moves the whole page.
+- **Treating the action's return as a transport detail.** It is the
+  screen's next state; model it as a choice type, not as a nullable
+  error string beside a nullable result.
+- **Fetching in a client component because it was easier.** That is a
+  waterfall the server could have composed in one pass.
+- **Putting the domain type in the props of a client component.** It is
+  serialised, so what arrives is its shape without its guarantees.
+- **Checking the session in the page and not in the action.** The page
+  decides what is drawn. The action is a separate way in, and a caller
+  can reach it without ever loading the page.
+- **Reaching for a global store to share server data.** The server
+  already composed it; the store is a second copy that goes stale.
+
+## Related skills
+
+- [functional-typescript-react](../functional-typescript-react/SKILL.md)
+- [functional-separating-pure-core-from-shell](../functional-separating-pure-core-from-shell/SKILL.md)
+- [functional-crossing-io-boundaries](../functional-crossing-io-boundaries/SKILL.md)
+- [functional-designing-workflow-pipelines](../functional-designing-workflow-pipelines/SKILL.md)
+
+## Further reading
+
+- [server-boundary.md](references/server-boundary.md) covers server
+  components, actions and the hook that calls them, forms and
+  accumulated errors, optimistic updates, caching and revalidation, and
+  how to test across the boundary.

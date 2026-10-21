@@ -1,0 +1,185 @@
+---
+name: functional-designing-what-to-observe
+description: Use when deciding what to log, trace, or measure, when an incident could not be diagnosed from what was recorded, or when adding observability late.
+license: MIT
+metadata:
+  pack: functional-design-skills
+  version: 3.3.0
+---
+
+# Designing What to Observe
+
+**In this pack:** [how much design a task warrants](../functional-design/references/calibration.md),
+[the notation](../functional-design/references/notation.md), and
+[syntax per language](../functional-design/SKILL.md#language-packs).
+
+## Overview
+
+Observability is a design decision, not an afterthought: it is choosing
+which questions a running system must be able to answer, and building
+the answers into the types before anything ships. Added afterwards, it
+becomes a scattering of log lines that record what was convenient rather
+than what anyone needs.
+
+A functional design has an advantage here that most do not. A workflow
+that returns events already produces a stream of business facts, in the
+domain's own words, at exactly the moments that matter. That stream is
+the observability primitive; logs, traces, and metrics are projections
+of it.
+
+## When to use
+
+- Designing a workflow, and deciding what it must reveal
+- An incident where the recorded data could not answer the question
+- A log line is about to be added inside a domain function
+- Choosing what to alert on
+- Adding observability to a system that has none
+
+Not for: choosing what an interface exposes to callers, which is
+[functional-deciding-what-matters](../functional-deciding-what-matters/SKILL.md).
+
+## Core rules
+
+1. Default. **Write the questions first.** "Why did this booking fail?", "How
+   many bookings are stuck?", "Is booking confirmation slower than
+   yesterday?" The fields
+   follow from the questions; the reverse produces data nobody uses.
+2. Default. **Emit domain events, not log lines.** The workflow already returns
+   what happened: events on success, and the error on a refusal. The shell
+   projects the result into whatever the platform wants. Two records are not
+   domain events, and the shell makes them itself: a span around each call that
+   leaves the process, and an error-level line for a failure nobody expected.
+3. Rule. **Record each event once.** A step that logs and returns an error
+   produces two records of one event and buries the useful one. The shell
+   records it, once, where it handles the result.
+4. Default. **Correlate at the edge.** Adopt the identifier the caller sent,
+   and create one only where the work enters the system. Carry it as a value,
+   and attach it where records are written. Carry the identifier, never a
+   context object that accumulates.
+5. Default. **Structured errors are already structured logs.** The error type
+   built for callers has the case, the identifiers, and the values. Do not
+   flatten it to a sentence before recording it. A field that can hold personal
+   data is the one part not recorded as it is: it is wrapped in the redacting
+   type, as rule 6 requires.
+6. Rule. **Never record secrets, or personal data beyond an identifier.**
+   Decide this at the type level, so a careless serialisation cannot leak it.
+7. Default. **Alert on what users feel**, not on what a machine noticed. The
+   oldest unprocessed item, or a queue depth that keeps rising, beats processor
+   utilisation. A fixed threshold on a resource number is the alert to avoid. A
+   count of work for users that has failed and now waits for a person, such as
+   dead letters or stuck bookings, is not a resource number and not an expected
+   outcome: one above zero is already a user waiting.
+
+## Pattern
+
+Observability bolted on inside the domain:
+
+```text
+priceBooking catalogue booking =
+  log "pricing booking " + booking.id                -- impure now
+  let priced = ...
+  log "priced " + show priced.total
+  metrics.increment "bookings.priced"
+  priced
+```
+
+The function is no longer pure, no longer testable without a logger, and
+what it records was chosen by whoever was debugging that week.
+
+Observability as a projection of events:
+
+```text
+-- core: pure, and its result says what was decided
+priceBooking :
+  Catalogue -> ValidatedBooking -> Result<PricedBooking, PricingError>
+
+-- shell: one projection of both sides of the result, in one place
+recordPricing :
+  CorrelationId -> BookingId -> Result<PricedBooking, PricingError>
+    -> Async<Unit>
+recordPricing correlation booking result =
+  match result with
+  | Ok priced ->
+      emit correlation "booking.priced"
+        { booking, total: priced.total, treatments: size priced.lines }
+  | Error reason ->
+      emit correlation "booking.pricing_rejected"
+        { booking, reason }
+```
+
+Every record now has the same shape, the same identifiers, and the same
+vocabulary as the business. Adding a field is a change to one function.
+A refusal is the `Error` side of the result, so the shell derives its
+record there; the core returns no rejection event. Where a projection
+matches over the cases of the error, as in
+[signals-and-events.md](references/signals-and-events.md), a new case
+does not compile until that projection handles it.
+
+## What each signal answers
+
+| Signal | Answers                          | Cardinality  |
+| ------ | -------------------------------- | ------------ |
+| Metric | Is it happening, how much        | Low          |
+| Trace  | Where did this one request go    | One per span |
+| Log    | What exactly happened, this time | Unbounded    |
+| Event  | What the business did            | Unbounded    |
+
+Put identifiers in logs and traces, never in metric labels: a metric
+labelled by booking identifier becomes a new time series per booking and will
+break the collector.
+
+## The three questions per workflow
+
+For each workflow, answer these before implementing it:
+
+1. **What must be countable?** Usually: attempted, succeeded, and each
+   named failure case. That falls straight out of the error type.
+2. **What must be timed?** The handler as a whole, plus any call it
+   makes to another system.
+3. **What must be reconstructable?** The identifiers needed to find one
+   specific case later: the command identity, the entity, the actor.
+
+If the answers are not in the event types, the event types are missing
+something the operator needs.
+
+## Red flags
+
+- A log statement inside a pure function
+- The same event logged in the step and again at the edge
+- An error flattened to a string before it is recorded
+- A metric labelled with an identifier
+- An alert on a fixed resource threshold rather than a user-visible symptom
+- An incident report saying "we could not tell from the logs"
+- Personal data or a token in a recorded payload
+- Observability added only to the code that broke last
+
+## Common mistakes
+
+- **Recording everything.** Volume is not coverage. Unbounded output
+  costs money and hides the line that mattered.
+- **Deciding fields before questions.** Produces data that is present and
+  useless.
+- **Making the core impure to observe it.** Return the fact; let the
+  shell record it.
+- **One correlation object passed everywhere.** That is a pass-through
+  variable, and it accumulates. See
+  [functional-hiding-information](../functional-hiding-information/SKILL.md).
+- **Alerting on every error.** Expected domain outcomes are not
+  incidents. Alert on rates and on things users feel.
+- **Sampling before deciding what must never be sampled.** Errors and
+  slow requests are exactly what you need at full fidelity.
+
+## Related skills
+
+- [functional-deciding-what-matters](../functional-deciding-what-matters/SKILL.md)
+- [functional-separating-pure-core-from-shell](../functional-separating-pure-core-from-shell/SKILL.md)
+- [functional-handling-errors-with-results](../functional-handling-errors-with-results/SKILL.md)
+- [functional-making-effects-reliable](../functional-making-effects-reliable/SKILL.md)
+
+## Further reading
+
+- [signals-and-events.md](references/signals-and-events.md) turns domain
+  events into indicators, and covers what to count and time.
+- [logs-traces-metrics.md](references/logs-traces-metrics.md) covers
+  where the projection is written, correlation, sampling, and what must
+  never be recorded.

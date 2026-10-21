@@ -1,0 +1,18 @@
+- slug: krua-tumya
+  title: "ครัวตำย่า"
+  title_en: "Krua Tumya"
+  subtitle: "Isan som tam, made to order"
+  summary: "A single-page restaurant demo with a hand-built identity, an interactive heat meter, and a plate builder that lets you choose every ingredient before you order."
+  type: "Brand site · Interactive demo"
+  year: "2026"
+  stack:
+    - "Jekyll"
+    - "CSS"
+    - "JavaScript"
+  path: "/krua-tumya/"
+  cover: "/assets/images/krua-tumya-cover-1440.jpg"
+  cover_2x: "/assets/images/krua-tumya-cover-2880.jpg"
+  cover_alt: "The ครัวตำย่า hero: bold red Thai lettering beside a framed illustration of a mortar and spoon."
+  accent: "#D8331F"
+  status: "Live demo"
+  role: "Design and build"

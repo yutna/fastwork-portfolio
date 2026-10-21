@@ -1,0 +1,14 @@
+{
+  "extends": ["html-validate:recommended"],
+  "rules": {
+    "no-inline-style": "off",
+    "no-trailing-whitespace": "off",
+    "no-raw-characters": "off",
+    "void-style": "off",
+    "attribute-boolean-style": "off",
+    "form-dup-name": "off",
+    "wcag/h30": "error",
+    "wcag/h32": "off",
+    "wcag/h37": "error"
+  }
+}

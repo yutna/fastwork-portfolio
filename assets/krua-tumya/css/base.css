@@ -1,0 +1,280 @@
+@charset "UTF-8";
+/* ครัวตำย่า — tokens, reset, and typography */
+    /* =========================================================
+       ครัวตำย่า — design tokens
+       ใช้เฉพาะ 6 สีในลิสต์; ความโปร่งใสคือสีเดิม ไม่ใช่สีใหม่
+       ========================================================= */
+    :root {
+        --paper: #FFF6E3;
+        --chili: #D8331F;
+        --lime: #1F7A3F;
+        --fish: #F5B301;
+        --pla: #6B3F1D;
+        --ink: #191410;
+
+        --font-body: "Anuphan", "Noto Sans Thai", "Tahoma", sans-serif;
+        --font-display: "Kanit", "Noto Sans Thai", "Tahoma", sans-serif;
+        --font-hand: "Sriracha", "Noto Sans Thai", "Tahoma", cursive;
+
+        --container: 1240px;
+        --header-h: 92px;
+        --header-row-h: 92px;
+        --shadow-hard: 5px 5px 0 var(--ink);
+        --shadow-big: 9px 9px 0 var(--ink);
+        --line: 3px solid var(--ink);
+        --radius-tag: 10px 5px 12px 7px;
+        --radius-card: 18px 9px 20px 11px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html {
+        scroll-behavior: smooth;
+        scroll-padding-top: calc(var(--header-h) + 18px);
+        -webkit-text-size-adjust: 100%;
+    }
+    body {
+        margin: 0;
+        color: var(--ink);
+        background-color: var(--paper);
+        background-image:
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='52' viewBox='0 0 52 52'%3E%3Cg stroke='%23191410' stroke-opacity='.045' stroke-width='1'%3E%3Cpath d='M0 52 52 0M-13 26 13 -13M26 65 65 26'/%3E%3C/g%3E%3C/svg%3E");
+        font-family: var(--font-body);
+        font-size: 17px;
+        line-height: 1.65;
+        font-weight: 400;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+    }
+    body.modal-open { overflow: hidden; }
+    ::selection { background: var(--lime); color: var(--paper); }
+    img, svg { display: block; max-width: 100%; }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; }
+    p, h1, h2, h3, h4, figure { margin: 0; }
+    ul, ol { margin: 0; padding: 0; list-style: none; }
+    :focus-visible {
+        outline: 4px solid var(--ink);
+        outline-offset: 4px;
+    }
+    .sr-only {
+        position: absolute !important;
+        width: 1px; height: 1px;
+        padding: 0; margin: -1px;
+        overflow: hidden; clip: rect(0, 0, 0, 0);
+        white-space: nowrap; border: 0;
+    }
+    .skip-link {
+        position: fixed;
+        z-index: 1000;
+        top: 10px; left: 10px;
+        padding: 10px 18px;
+        background: var(--lime);
+        color: var(--paper);
+        border: var(--line);
+        box-shadow: var(--shadow-hard);
+        font-weight: 700;
+        transform: translateY(-160%);
+    }
+    .skip-link:focus { transform: translateY(0); }
+
+    .container {
+        width: min(calc(100% - 48px), var(--container));
+        margin-inline: auto;
+    }
+    .section {
+        position: relative;
+        padding: clamp(68px, 8vw, 112px) 0;
+    }
+    .section--tight { padding-top: clamp(50px, 6vw, 80px); }
+
+    /* ---------- type ---------- */
+    .display {
+        font-family: var(--font-display);
+        font-weight: 900;
+        font-style: normal;
+        letter-spacing: -0.025em;
+        line-height: 1.04;
+    }
+    .hand {
+        font-family: var(--font-hand);
+        font-style: normal;
+        font-weight: 400;
+        line-height: 1.35;
+    }
+    .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 1.3;
+        letter-spacing: 0.01em;
+    }
+    .eyebrow-dot {
+        width: 13px; height: 13px;
+        border: 2px solid var(--ink);
+        background: var(--lime);
+        border-radius: 50%;
+        flex: 0 0 auto;
+        transform: rotate(8deg);
+    }
+    .section-head {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(260px, 390px);
+        gap: 26px 56px;
+        align-items: end;
+        margin-bottom: clamp(32px, 4vw, 52px);
+    }
+    .section-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+    .section-num {
+        display: inline-grid;
+        place-items: center;
+        min-width: 38px;
+        height: 31px;
+        padding: 0 7px;
+        background: var(--chili);
+        color: var(--paper);
+        border: 3px solid var(--ink);
+        border-radius: 6px 2px 7px 4px;
+        box-shadow: 3px 3px 0 var(--ink);
+        font-family: var(--font-display);
+        font-weight: 900;
+        font-size: 18px;
+        line-height: 1;
+        transform: rotate(-2deg);
+    }
+    .section-title {
+        font-family: var(--font-display);
+        font-weight: 900;
+        font-style: normal;
+        font-size: clamp(2.35rem, 4.8vw, 4.25rem);
+        line-height: 1.1;
+        letter-spacing: -0.035em;
+        text-wrap: balance;
+    }
+    .section-title em {
+        font-style: normal;
+        color: var(--chili);
+    }
+    .section-deck {
+        max-width: 380px;
+        justify-self: end;
+        font-size: 17px;
+        line-height: 1.7;
+        text-wrap: pretty;
+    }
+    .section-deck::before {
+        content: "";
+        display: block;
+        width: 54px;
+        height: 5px;
+        margin-bottom: 14px;
+        background: var(--lime);
+        border: 2px solid var(--ink);
+        transform: rotate(-2deg);
+    }
+
+    /* ---------- buttons & hard interactions ---------- */
+    .btn {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 50px;
+        padding: 11px 22px;
+        border-style: solid; border-color: var(--ink); border-width: 4px 3px 4px 3px;
+        border-radius: var(--radius-tag);
+        box-shadow: var(--shadow-hard);
+        background: var(--paper);
+        color: var(--ink);
+        font-family: var(--font-body);
+        font-size: 17px;
+        font-weight: 700;
+        line-height: 1.25;
+        text-decoration: none;
+        cursor: pointer;
+        transform: translate(0, 0);
+        transition: none;
+        touch-action: manipulation;
+    }
+    .btn:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 7px 7px 0 var(--ink);
+    }
+    .btn:active {
+        transform: translate(4px, 4px);
+        box-shadow: 1px 1px 0 var(--ink);
+    }
+    .btn--chili {
+        background: var(--chili);
+        color: var(--paper);
+        font-size: 19px;
+    }
+    .btn--fish { background: var(--fish); color: var(--ink); }
+    .btn--lime { background: var(--lime); color: var(--paper); }
+    .btn--outline { background: var(--paper); color: var(--ink); }
+    .btn--small {
+        min-height: 44px;
+        padding: 8px 16px;
+        font-size: 17px;
+        border-width: 3px 4px 3px 4px;
+    }
+    .btn--small.btn--chili { font-size: 18px; }
+    .btn--wide { width: 100%; }
+    .btn svg { width: 18px; height: 18px; flex: 0 0 auto; }
+    .btn[disabled] {
+        opacity: .42;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: 3px 3px 0 var(--ink);
+    }
+    .text-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 4px 2px;
+        border: 0;
+        border-bottom: 3px solid var(--ink);
+        background: transparent;
+        color: var(--ink);
+        font-size: 17px;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .text-link:hover { border-bottom-color: var(--chili); }
+    .text-link svg { width: 18px; height: 18px; }
+
+    /* ---------- fabric / divider ---------- */
+    .pha-stripe {
+        height: 16px;
+        border-top: 3px solid var(--ink);
+        border-bottom: 3px solid var(--ink);
+        background: linear-gradient(90deg,
+            var(--chili) 0 25%,
+            var(--lime) 25% 50%,
+            var(--fish) 50% 75%,
+            var(--pla) 75% 100%);
+        background-size: 240px 100%;
+    }
+    .divider {
+        height: 18px;
+        border-top: 3px solid var(--ink);
+        border-bottom: 3px solid var(--ink);
+        background: repeating-linear-gradient(90deg,
+            var(--chili) 0 30px,
+            var(--lime) 30px 60px,
+            var(--fish) 60px 90px,
+            var(--pla) 90px 120px);
+    }

@@ -1,0 +1,217 @@
+# The Principles, on One Page
+
+The main rules in this pack, compressed. Use it as a checklist when there is
+no time to read a skill, and follow the link when a line needs its
+reasoning.
+
+## Contents
+
+- [Complexity](#complexity)
+- [Modules and interfaces](#modules-and-interfaces)
+- [Types and the domain](#types-and-the-domain)
+- [Representation](#representation)
+- [Functions and workflows](#functions-and-workflows)
+- [Errors](#errors)
+- [Effects and state](#effects-and-state)
+- [Mechanics](#mechanics)
+- [Reliability, once effects cross a process](#reliability-once-effects-cross-a-process)
+- [Observability, as a design decision](#observability-as-a-design-decision)
+- [Communication](#communication)
+- [Verification](#verification)
+
+## Complexity
+
+1. Complexity is what makes a system hard to change, not what makes it
+   large. Measure it by how hard change is.
+2. It has three symptoms: change amplification, cognitive load, unknown
+   unknowns. It has two causes: dependencies and obscurity.
+3. It accumulates from small concessions, so the only workable policy is
+   zero tolerance, applied one change at a time.
+4. The primary output of a change is the design it leaves behind.
+5. Produce two genuinely different designs before choosing one.
+6. Ask whether the complexity is in the problem or in your solution.
+   Complexity you added is a candidate for deletion rather than
+   refactoring — a domain expert describing the requirement would not
+   mention a flag, a cache, or a required call order.
+7. Almost all added complexity is state, then ordering, then sheer
+   volume of code, in that order of harm.
+
+Skills: `functional-diagnosing-complexity`, `functional-programming-strategically`.
+
+## Modules and interfaces
+
+1. A module's value is how much it hides per unit of interface. Prefer
+   deep modules to many small ones.
+2. The interface includes everything a caller must know, including the
+   rules no type states.
+3. Each module owns knowledge no other module has. Two owners of one
+   fact is leakage.
+4. Decompose by knowledge, not by the order things happen.
+5. Each layer changes the abstraction. A function whose body is one
+   call, and that translates, narrows and guards nothing, is not a
+   layer.
+6. Given a choice, make the implementation harder and the interface
+   easier.
+7. Bring code together when it shares knowledge; keep it apart when one
+   part is general and the other special.
+8. Make what matters obvious and everything else invisible.
+
+Skills: `functional-designing-deep-modules`, `functional-hiding-information`,
+`functional-separating-layers`, `functional-splitting-and-joining-code`,
+`functional-deciding-what-matters`, `functional-applying-solid-functionally`.
+
+## Types and the domain
+
+1. Use the domain's words, unchanged, in every type and function name.
+2. Discover the domain through events and the commands that cause them,
+   not through nouns.
+3. Say AND with a record and OR with a choice type. Most modelling
+   mistakes are AND where the domain means OR.
+4. Make illegal states unrepresentable; prefer construction over
+   validation.
+5. Wrap every constrained primitive in its own type with a constructor
+   that can fail.
+6. Model a lifecycle as a choice type with one function per transition.
+7. Draw a consistency boundary around each set of invariants that must
+   hold together, and make it one transaction.
+8. Draw a context boundary wherever a word changes meaning, and never
+   share a model across one.
+
+Skills: `functional-capturing-the-domain`, `functional-modeling-with-algebraic-types`,
+`functional-making-illegal-states-unrepresentable`, `functional-constraining-primitive-values`,
+`functional-modeling-state-machines`, `functional-enforcing-consistency-boundaries`.
+
+## Representation
+
+The rules above assume a shape is worth modelling. These say when it is
+not.
+
+1. Model the shape. Default, not preference; "this is verbose" is not a
+   reason to leave it.
+2. Leave it generic only on an observable fact: its fields come from
+   config or an admin, it varies per tenant, its schema is data, or
+   nothing branches on it.
+3. Decide per value, never per project. A typed envelope around a
+   generic payload is the usual answer.
+4. Generic is not cheaper. It owes a boundary schema, key constants,
+   accessor functions, coverage tests, and a schema version.
+5. Anything the system decides with gets a type. Anything it only
+   stores, forwards, or renders may stay generic.
+
+Skill: `functional-choosing-types-or-plain-data`.
+
+## Functions and workflows
+
+1. Every function a module exports is total: every input its type
+   admits gets an output of its type, and a failure the business can
+   name is in that type.
+2. A workflow is a command in and events out, written as a pipeline of
+   total functions with one type per completed stage.
+3. A workflow takes values, not capabilities. A handler reads first;
+   where a read cannot come first, it reads between two pure functions;
+   the core returns instructions when the effects are a business
+   artefact.
+4. Configuration and dependencies first, data last, so partial
+   application produces something useful.
+
+Skills: `functional-composing-functions`, `functional-designing-workflow-pipelines`,
+`functional-parameterizing-dependencies`.
+
+## Errors
+
+1. An error a caller must handle belongs in the return type, named in
+   the domain's words.
+2. Short-circuit sequential steps; accumulate independent ones.
+3. Before handling an error, try to define it out of existence, mask it
+   where the recovery is universal, or aggregate the handling at the
+   edge.
+4. Crash on conditions that mean the program is wrong. A crash is never
+   part of a signature, and never the answer to a business failure.
+5. Convert foreign failures once, at the boundary.
+
+Skills: `functional-handling-errors-with-results`,
+`functional-defining-errors-out-of-existence`.
+
+## Effects and state
+
+1. The core is pure: no effect type, no capability. A handler reads,
+   calls the core, and writes.
+2. The core returns decisions, as results, events or instructions; the
+   shell acts on them.
+3. Time, randomness, and identifiers reach the core as values, drawn by
+   the shell.
+4. Transform, never mutate. Keep the one mutable cell at the edge and
+   replace its value atomically.
+5. Domain types are not wire types or storage types. Parse inward,
+   serialise outward, in one place per boundary.
+
+Skills: `functional-separating-pure-core-from-shell`, `functional-managing-state-immutably`,
+`functional-crossing-io-boundaries`.
+
+## Mechanics
+
+1. A loop with an accumulator is a fold. Give every recursive type its
+   fold and consume it through that.
+2. Know whether your language eliminates tail calls; if not, use an
+   accumulator loop or a trampoline.
+3. Use laziness for size, not for style, and force at the boundary.
+4. Most design patterns are a function, a function type, or a choice
+   type here.
+
+Skills: `functional-folding-over-data`, `functional-using-recursion-and-laziness`,
+`functional-translating-gof-patterns`.
+
+## Reliability, once effects cross a process
+
+Design rules stop being enough once an effect can be retried,
+duplicated, or lost.
+
+1. Give every command an identity the caller controls, and carry it into
+   every effect.
+2. Make the effect idempotent, not the decision. Deciding again is
+   harmless; charging again is not.
+3. Assume at-least-once delivery and de-duplicate on receipt.
+4. Never write state and publish an event in two transactions.
+5. Retry at the shell, bounded in attempts and in total time.
+6. Compensate with a named business operation; do not lock across
+   systems.
+7. Model partial success explicitly; it is a report, not a `Result`.
+
+Skill: `functional-making-effects-reliable`.
+
+## Observability, as a design decision
+
+The same idea as deciding what matters, applied to what a running system
+reveals.
+
+1. Write the questions the system must answer before choosing fields.
+2. The events a workflow returns are the observability primitive.
+3. Log once, at the edge; correlate with an identifier adopted or
+   created there.
+4. Structured errors are already structured records; do not flatten
+   them.
+5. Keep identifiers out of metric labels and secrets out of everything.
+6. Alert on what a user would notice, not on a resource number.
+
+Skill: `functional-designing-what-to-observe`.
+
+## Communication
+
+1. A name should distinguish this thing from everything nearby. Being
+   unable to name something is a design finding.
+2. A comment must contain what the code cannot say. Write the interface
+   comment before the implementation.
+3. Similar things look similar; different things look different.
+
+Skills: `functional-choosing-precise-names`, `functional-writing-useful-comments`,
+`functional-programming-strategically`.
+
+## Verification
+
+1. Test the core with plain values. A rule that needs infrastructure to
+   test is in the wrong place.
+2. Stub capabilities with functions, not with a mocking framework.
+3. Assert on returned values, never on which functions were called.
+4. Audit against the red flags before calling anything done.
+
+Skills: `functional-testing-functional-code`, `functional-reviewing-functional-design`.

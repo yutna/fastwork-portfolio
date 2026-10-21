@@ -1,0 +1,48 @@
+title: "Yutthana — Selected Work"
+description: "Selected web work by Yutthana Siphuengchai — clear, characterful websites built with care."
+url: "https://yutna.github.io"
+baseurl: "/fastwork-portfolio"
+lang: en
+timezone: Asia/Bangkok
+markdown: kramdown
+permalink: pretty
+strict_front_matter: true
+
+liquid:
+  error_mode: strict
+
+exclude:
+  - AGENTS.md
+  - CLAUDE.md
+  - CODE_OF_CONDUCT.md
+  - CONTRIBUTING.md
+  - Gemfile
+  - Gemfile.lock
+  - LICENSE
+  - README.md
+  - SECURITY.md
+  - SUPPORT.md
+  - node_modules
+  - package.json
+  - package-lock.json
+  - playwright.config.mjs
+  - scripts
+  - tests
+  - tsconfig.json
+  - vendor
+  - artifacts
+  - test-results
+  - .github
+  - .htmlvalidate.json
+  - .mise.toml
+  - .opencode
+
+include:
+  - .nojekyll
+
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "home"
