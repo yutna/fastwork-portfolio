@@ -36,6 +36,7 @@ over-application as a design failure.
 ## Invariants
 
 - Plain ESM with JSDoc types checked by `tsc` (`checkJs`, `strict`).
+- No framework and no build step for browser code.
 - State transitions return a new frozen state. Do not mutate arguments
   or module-level shared data.
 - Expected failures are values, not exceptions. Programmer errors may
