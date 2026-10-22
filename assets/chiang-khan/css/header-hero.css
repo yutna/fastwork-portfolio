@@ -221,6 +221,9 @@
 .ck-ticker {
   position: relative;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-top: clamp(1.5rem, 4vw, 3rem);
   padding: 0.85rem 0;
   border-top: 1.5px dashed rgba(233, 161, 59, 0.55);
@@ -229,33 +232,25 @@
 
 .ck-ticker__track {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 3rem;
-  width: max-content;
-  animation: ck-marquee 34s linear infinite;
+  justify-content: center;
+  width: auto;
 }
 
 .ck-ticker__track span {
   color: var(--ck-mist);
   font-size: 0.85rem;
   font-weight: 400;
+  line-height: 1.6;
   letter-spacing: 0.08em;
-  white-space: nowrap;
+  text-align: center;
+  white-space: normal;
 }
 
 .ck-ticker__track b {
   color: var(--ck-gold);
   font-weight: 400;
-}
-
-@keyframes ck-marquee {
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(-50%);
-  }
 }
 
 @media (min-width: 900px) {

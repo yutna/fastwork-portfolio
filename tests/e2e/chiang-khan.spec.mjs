@@ -233,15 +233,24 @@ test('print media keeps the completed passport and hides site chrome', async ({ 
   await expect(page.locator('.ck-passport__empty-note')).toBeHidden();
 });
 
-test('reduced motion stops the ticker and leaves one static line', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'reduce' });
+test('the ticker is a single centered static line', async ({ page }) => {
   await openFresh(page);
-  const ticker = await page.locator('.ck-ticker__track').evaluate((element) => ({
-    animation: getComputedStyle(element).animationName,
-    display: getComputedStyle(element).display
-  }));
+  await expect(page.locator('.ck-ticker__track > span')).toHaveCount(1);
+  const ticker = await page.locator('.ck-ticker__track').evaluate((element) => {
+    const span = element.querySelector('span');
+    return {
+      animation: getComputedStyle(element).animationName,
+      justifyContent: getComputedStyle(element).justifyContent,
+      whiteSpace: span ? getComputedStyle(span).whiteSpace : '',
+      textAlign: span ? getComputedStyle(span).textAlign : '',
+      text: span?.textContent?.trim() ?? ''
+    };
+  });
   expect(ticker.animation).toBe('none');
-  await expect(page.locator('.ck-ticker__track > span').nth(1)).toBeHidden();
+  expect(ticker.justifyContent).toBe('center');
+  expect(ticker.whiteSpace).toBe('normal');
+  expect(ticker.textAlign).toBe('center');
+  expect(ticker.text.endsWith('·')).toBe(false);
 });
 
 test('the skip link lands below the sticky header', async ({ page }) => {
