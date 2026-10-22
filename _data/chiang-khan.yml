@@ -1,0 +1,103 @@
+# Single content source for the เชียงคาน — ตื่นเช้าให้ทัน demo.
+# Times, durations, and prices are sample values for the design demo.
+# The browser shell reads the same object through a JSON script tag.
+
+slots:
+  - key: morning
+    label: "เช้า"
+  - key: late-morning
+    label: "สาย"
+  - key: afternoon
+    label: "บ่าย"
+  - key: evening
+    label: "เย็น"
+
+stops:
+  - id: alms
+    day: 1
+    slot: morning
+    time: "06:00"
+    duration: 45
+    travel: 0
+    cost: 100
+    title: "ใส่บาตรยามเช้า"
+    short: "ใส่บาตร"
+    illustration: "alms"
+    blurb: "ข้าวเหนียวอุ่น\u00A0ๆ ยังนึ่งอยู่ หมอกยังไม่ลอย และถนนชายโขงยังเงียบ"
+    note: "ซื้อชุดใส่บาตรจากร้านในตลาดเช้า ประมาณ 100 บาท แต่งกายสุภาพ"
+  - id: street
+    day: 1
+    slot: morning
+    time: "07:30"
+    duration: 60
+    travel: 5
+    cost: 0
+    title: "ถนนบ้านไม้เก่ายามเช้า"
+    short: "บ้านไม้เก่า"
+    illustration: "street"
+    blurb: "บ้านไม้สองชั้นสีซีดเรียงตัวตามริมโขง เงาเฉียง\u00A0ๆ ก่อนร้านค้าเปิด"
+    note: "ถนนคนเดินเปิดประมาณ 16:00–22:00 — ตอนเช้าเดินดูบ้านเก่าได้เงียบกว่า"
+  - id: coffee
+    day: 1
+    slot: late-morning
+    time: "09:00"
+    duration: 45
+    travel: 5
+    cost: 80
+    title: "กาแฟริมโขง"
+    short: "กาแฟริมโขง"
+    illustration: "coffee"
+    blurb: "นั่งร้านเล็ก\u00A0ๆ หันหน้าออกแม่น้ำ เรือล่องผ่านบ้างเป็นครั้งคราว"
+    note: "กาแฟหนึ่งแก้วประมาณ 80 บาท ร้านส่วนใหญ่เปิดสาย"
+  - id: temple
+    day: 1
+    slot: late-morning
+    time: "10:30"
+    duration: 45
+    travel: 10
+    cost: 20
+    title: "วัดศรีคุณเมือง"
+    short: "วัดศรีคุณเมือง"
+    illustration: "temple"
+    blurb: "หลังคาไม้เก่าและภาพจิตรกรรมฝาผนังเล่าเรื่องชาดก เป็นวัดคู่เมืองที่คนท้องถิ่นยังมาใช้จริง"
+    note: "แต่งกายสุภาพ งดเสียงดัง และสอบถามก่อนถ่ายภาพในเขตศาสนสถาน"
+  - id: kaeng
+    day: 2
+    slot: morning
+    time: "05:45"
+    duration: 60
+    travel: 30
+    cost: 100
+    title: "แก่งคุดคู้ยามพระอาทิตย์ขึ้น"
+    short: "แก่งคุดคู้"
+    illustration: "kaeng"
+    blurb: "แก่งหินกลางโขงที่โผล่พ้นน้ำในหน้าแล้ง แสงแรกขึ้นจากฝั่งตรงข้าม"
+    note: "อยู่ห่างจากตัวเมืองประมาณ 5 กม. ควรจองรถหรือจักรยานไว้ล่วงหน้า"
+
+day_notes:
+  - day: 1
+    slot: afternoon
+    title: "พักร้อนริมโขง"
+    text: "นั่งใต้ต้นไม้หรือกลับที่พักก่อนออกไปเดินตลาดตอนเย็น"
+  - day: 1
+    slot: evening
+    title: "ถนนคนเดิน"
+    text: "ตลาดเปิดประมาณ 16:00–22:00 — ไม่นับเป็นหมุด แต่คุ้มที่จะเดิน"
+  - day: 2
+    slot: late-morning
+    title: "ตลาดเช้าแล้วเตรียมกลับ"
+    text: "เดินตลาดเช้า ทำบุญ หรือนั่งกาแฟแก้วสุดท้ายก่อนเดินทางกลับ"
+
+budget:
+  food: 250
+  local_transport: 80
+  bicycle: 100
+  bicycle_stops:
+    - street
+    - coffee
+    - temple
+  labels:
+    food: "ค่าอาหารและเครื่องดื่ม"
+    local_transport: "ค่าเดินทางในเมือง"
+    bicycle: "ค่าจักรยาน"
+    stops: "ค่าหมุดและกิจกรรม"

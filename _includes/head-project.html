@@ -1,18 +1,5 @@
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ page.title | escape }}</title>
-<meta name="description" content="{{ page.description | escape }}">
-<meta name="theme-color" content="{{ page.theme_color | default: '#FFF6E3' }}">
-{% include noindex.html %}
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23FFF6E3'/%3E%3Cpath d='M14 26h36c0 18-7 26-18 26S14 44 14 26Z' fill='%236B3F1D' stroke='%23191410' stroke-width='4'/%3E%3Cellipse cx='32' cy='26' rx='18' ry='7' fill='%23FFF6E3' stroke='%23191410' stroke-width='4'/%3E%3Cpath d='M39 6 30 30' stroke='%236B3F1D' stroke-width='7' stroke-linecap='round'/%3E%3Ccircle cx='44' cy='17' r='4' fill='%23D8331F'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Kanit:wght@800;900&family=Sriracha&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ '/assets/krua-tumya/css/base.css' | relative_url }}">
-<link rel="stylesheet" href="{{ '/assets/krua-tumya/css/shell.css' | relative_url }}">
-<link rel="stylesheet" href="{{ '/assets/krua-tumya/css/menu-meter.css' | relative_url }}">
-<link rel="stylesheet" href="{{ '/assets/krua-tumya/css/builder.css' | relative_url }}">
-<link rel="stylesheet" href="{{ '/assets/krua-tumya/css/story-visit-footer.css' | relative_url }}">
-<link rel="stylesheet" href="{{ '/assets/krua-tumya/css/overlays.css' | relative_url }}">
-<link rel="stylesheet" href="{{ '/assets/krua-tumya/css/responsive.css' | relative_url }}">
-<link rel="stylesheet" href="{{ '/assets/krua-tumya/css/back-link.css' | relative_url }}">
+{% if page.project_slug == 'chiang-khan' %}
+{% include head-chiang-khan.html %}
+{% else %}
+{% include head-krua-tumya.html %}
+{% endif %}
