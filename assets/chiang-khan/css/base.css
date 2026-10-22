@@ -178,6 +178,10 @@ button {
   border: 0;
 }
 
+.ck-nowrap {
+  white-space: nowrap;
+}
+
 .ck-symbols {
   position: absolute;
   width: 0;
