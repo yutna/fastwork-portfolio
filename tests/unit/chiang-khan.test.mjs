@@ -372,6 +372,29 @@ test('random plans are deterministic for a supplied source and stay canonical', 
   assert.ok(Object.isFrozen(repeated.draft));
 });
 
+test('random plans clamp out-of-range sources to a valid draft', () => {
+  const order = content.stops.map((stop) => stop.id);
+  const sources = [
+    () => 1,
+    () => -1,
+    () => Number.NaN,
+    () => Number.POSITIVE_INFINITY,
+    () => Number.NEGATIVE_INFINITY
+  ];
+
+  for (const random of sources) {
+    const state = selectRandomPlan(empty, random, content);
+    assert.ok(state.draft.length >= MIN_PLAN_STOPS);
+    assert.ok(state.draft.length <= content.stops.length);
+    assert.equal(new Set(state.draft).size, state.draft.length);
+    assert.deepEqual(
+      state.draft,
+      order.filter((id) => state.draft.includes(id))
+    );
+    assert.equal(planSummary(state.draft, content).canSave, true);
+  }
+});
+
 test('formatting and slot labels are stable', () => {
   assert.equal(formatMinutes(0), '0 น.');
   assert.equal(formatMinutes(45), '45 น.');

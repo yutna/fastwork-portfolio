@@ -244,6 +244,58 @@ test('reduced motion stops the ticker and leaves one static line', async ({ page
   await expect(page.locator('.ck-ticker__track > span').nth(1)).toBeHidden();
 });
 
+test('the skip link lands below the sticky header', async ({ page }) => {
+  await openFresh(page);
+  await page.keyboard.press('Tab');
+  await expect(page.locator('.ck-skip')).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/#main$/);
+
+  const headerHeight = await page
+    .locator('.ck-header')
+    .evaluate((element) => element.getBoundingClientRect().height);
+  await expect
+    .poll(async () =>
+      page.locator('#main').evaluate((element) => element.getBoundingClientRect().top)
+    )
+    .toBeGreaterThanOrEqual(headerHeight - 1);
+
+  await page.keyboard.press('Tab');
+  await expect(page.locator('.ck-hero .ck-btn--gold')).toBeFocused();
+});
+
+test('the fixed return link clears the passport share action', async ({ page }) => {
+  await openFresh(page);
+  await stampAll(page);
+  await page.locator('#ckShare').scrollIntoViewIfNeeded();
+  await page.evaluate(() => {
+    const share = document.querySelector('#ckShare');
+    if (share === null) return;
+    const rect = share.getBoundingClientRect();
+    window.scrollBy(0, rect.bottom - window.innerHeight + 8);
+  });
+
+  const boxes = await page.evaluate(() => {
+    const back = document.querySelector('.portfolio-return')?.getBoundingClientRect();
+    const share = document.querySelector('#ckShare')?.getBoundingClientRect();
+    return {
+      back: back ? { x: back.x, y: back.y, width: back.width, height: back.height } : null,
+      share: share ? { x: share.x, y: share.y, width: share.width, height: share.height } : null
+    };
+  });
+
+  expect(boxes.back).not.toBeNull();
+  expect(boxes.share).not.toBeNull();
+  if (boxes.back === null || boxes.share === null) return;
+
+  const overlaps =
+    boxes.back.x < boxes.share.x + boxes.share.width &&
+    boxes.back.x + boxes.back.width > boxes.share.x &&
+    boxes.back.y < boxes.share.y + boxes.share.height &&
+    boxes.back.y + boxes.back.height > boxes.share.y;
+  expect(overlaps).toBe(false);
+});
+
 test('the page has no horizontal overflow at the active viewport', async ({ page }) => {
   await openFresh(page);
   const overflow = await page.evaluate(
