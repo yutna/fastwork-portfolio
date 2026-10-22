@@ -39,20 +39,27 @@ mise exec -- npm run preview
 
 The preview runs at <http://127.0.0.1:4001/fastwork-portfolio/>.
 
-## Project page
+## Project pages
 
 `/krua-tumya/` is a preserved port of the original demo. Do not redesign
 it or change its palette, fonts, copy, or behaviour. The floating
 `← Portfolio` link is the only visual addition. The `role="group"`
 correction on `.hero-proof` is intentional and non-visual.
 
+`/chiang-khan/` is a designed campaign demo. Its copy, stops, notes, and
+sample budget come from `_data/chiang-khan.yml`; keep that file as the
+single content source. Times, prices, and travel routes are examples, not
+a booking promise. The six-colour palette, self-hosted OFL fonts, and
+line-drawn illustrations are part of the design.
+
 ## Accessibility
 
 The original palette puts six small labels at 4.42:1 against their
 backgrounds, below the 4.5:1 WCAG AA threshold. The accessibility test
-(`tests/e2e/a11y.spec.mjs`) documents and allows only those selectors.
-Any new contrast issue fails the suite. Do not change the demo palette to
-silence the exception.
+(`tests/e2e/a11y.spec.mjs`) documents and allows only those selectors on
+the preserved page. The Chiang Khan page has no exceptions. Any new
+contrast issue fails the suite. Do not change the preserved demo palette
+to silence the exception.
 
 ## JavaScript
 

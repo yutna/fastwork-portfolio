@@ -9,13 +9,15 @@ non-JavaScript configuration are outside its scope.
 In scope:
 
 - `assets/**/*.{js,mjs}` — currently `assets/krua-tumya/js/*.mjs`
+  and `assets/chiang-khan/js/*.mjs`
 - `scripts/**/*.{js,mjs}`
 - `tests/**/*.{js,mjs}`
 - `playwright.config.mjs`
 
 All in-scope files use plain ESM with JSDoc types checked by `tsc`
-(`checkJs`, `strict`). Browser code also follows
-`assets/krua-tumya/js/AGENTS.md`.
+(`checkJs`, `strict`). Browser code also follows the `AGENTS.md` in its
+demo's JavaScript directory (`assets/krua-tumya/js/AGENTS.md`,
+`assets/chiang-khan/js/AGENTS.md`).
 
 For every in-scope change:
 
@@ -50,6 +52,11 @@ GitHub Pages project site at <https://yutna.github.io/fastwork-portfolio/>.
   its markup, CSS, palette, fonts, copy, and behaviour. The only visual
   addition is the floating `← Portfolio` link. A non-visual `role="group"`
   correction on `.hero-proof` is also intentional.
+- `/chiang-khan/`: a designed travel campaign with five morning stamps,
+  a two-day planner, and a printable passport. Its content source is
+  `_data/chiang-khan.yml`; times, prices, and routes are sample content,
+  not a booking service. Keep the six-colour palette, self-hosted OFL
+  fonts, and two-colour line illustrations.
 - The project site uses `baseurl: /fastwork-portfolio`. Use
   `relative_url` for every internal link and asset; never hard-code a
   root-relative URL without it.
@@ -57,18 +64,22 @@ GitHub Pages project site at <https://yutna.github.io/fastwork-portfolio/>.
   tags, and the `noindex` checks in `scripts/check-site.mjs`. This is
   best-effort on a public host.
 - No analytics, trackers, cookies, or third-party runtime dependencies.
-  Google Fonts on the project page are part of the original demo.
+  Google Fonts on the preserved ครัวตำย่า demo are part of the original
+  design; the Chiang Khan demo self-hosts its OFL fonts.
 
 ## Context map
 
 | Path | Why it matters |
 | --- | --- |
-| `assets/krua-tumya/js/` | Browser runtime; read its `AGENTS.md` first |
+| `assets/krua-tumya/js/` | Preserved browser runtime; read its `AGENTS.md` first |
+| `assets/chiang-khan/js/` | Campaign runtime; read its `AGENTS.md` first |
 | `scripts/` | Node checks, screenshots, and preview server; use `node:` built-ins |
 | `tests/` | Unit tests and Playwright specs; assert behaviour, not implementation |
 | `playwright.config.mjs` | E2E config; use the lightest FDS row |
-| `_config.yml`, `_layouts/`, `_includes/`, `index.html`, `krua-tumya/`, `404.html` | Jekyll pages and shared markup |
-| `assets/css/` | Home and preserved demo styles |
+| `_config.yml`, `_layouts/`, `_includes/`, `index.html`, `krua-tumya/`, `chiang-khan/`, `404.html` | Jekyll pages and shared markup |
+| `_data/chiang-khan.yml` | Single content source for the campaign demo |
+| `assets/css/` | Home styles |
+| `assets/chiang-khan/css/` | Campaign styles and self-hosted font faces |
 | `.github/workflows/` | CI, PR checks, Pages, and release |
 | `README.md`, `CONTRIBUTING.md` | Public overview and contributor workflow |
 
@@ -132,9 +143,9 @@ mise exec -- npm run capture            # save desktop/mobile audit screenshots
 ```
 
 Run `npm run test:all` before claiming a change is complete. The e2e
-suite runs at 1440×1000 and 390×844, checks the project's behaviour and
-local persistence, audits WCAG A/AA with axe, and verifies the noindex
-and internal-link checks.
+suite runs at 1440×1000 and 390×844, checks both demos' behaviour, local
+persistence, share links, print styles, reduced motion, audits WCAG A/AA
+with axe, and verifies the noindex and internal-link checks.
 
 ## Git workflow
 
@@ -147,5 +158,6 @@ Do not publish a Fastwork profile from this repository.
 
 The original ครัวตำย่า palette puts six small labels at 4.42:1 against
 their backgrounds (WCAG AA asks for 4.5:1). The a11y test allows only
-those documented selectors and fails on any new contrast issue. Do not
-change the demo's palette to silence them.
+those documented selectors on the preserved page and fails on any new
+contrast issue. The Chiang Khan page has no exceptions. Do not change
+the preserved demo's palette to silence them.

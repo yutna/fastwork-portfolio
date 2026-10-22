@@ -1,0 +1,485 @@
+---
+layout: project
+title: "เชียงคาน — ตื่นเช้าให้ทัน"
+description: "เชียงคาน จังหวัดเลย เมืองรองริมโขงที่ชวนตื่นเช้า 5 หมุด วางแผน 2 วัน 1 คืน และเก็บตราประทับในหนังสือเดินทางเล่มจิ๋ว"
+permalink: /chiang-khan/
+project_slug: chiang-khan
+project_js: /assets/chiang-khan/js/main.mjs
+theme_color: "#2B4B6F"
+---
+{% assign ck = site.data['chiang-khan'] %}
+<svg class="ck-symbols" aria-hidden="true" focusable="false" width="0" height="0">
+  <defs>
+    <symbol id="ck-ill-hero" viewBox="0 0 720 420">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="560" cy="128" r="56"/>
+        <path d="M560 58v-14M560 198v14M490 128h-14M630 128h14M510 78l-10-10M610 178l10 10M610 78l10-10M510 178l-10-10"/>
+        <path d="M18 232c62-42 108-58 170-34s104 30 168 10 120-34 180-14 112 42 166 26" opacity=".8"/>
+        <path d="M0 260c78-30 142-22 214 2s130 18 202-6 142-28 214-4 74 22 90 24" opacity=".55"/>
+        <path d="M40 292c44-10 82-10 126 0s84 8 126-2 84-8 126 2 84 8 126-2 84-8 126 2" stroke-dasharray="2 12" opacity=".75"/>
+        <path d="M24 326c52-9 94-8 142 1s96 8 144-1 96-8 144 1 96 8 144-1 70-7 98-2" stroke-dasharray="2 14" opacity=".55"/>
+        <path d="M70 360c60-8 112-7 168 1s112 7 168-1 112-8 168 0 60 7 76 7" stroke-dasharray="2 16" opacity=".4"/>
+        <path d="M526 250h68M512 270h96M532 290h56M518 310h84" opacity=".85"/>
+        <path d="M396 292c22 20 64 20 86 0"/>
+        <path d="M438 292v-30"/>
+        <path d="M438 268c12-8 24-4 28 6"/>
+        <circle cx="466" cy="274" r="3.5" fill="var(--ck-gold)" stroke="none"/>
+        <path d="M300 104c8-9 17-9 25 0 8-9 17-9 25 0" stroke-width="2"/>
+        <circle cx="126" cy="340" r="7"/>
+        <path d="M126 347v22M112 354h28M126 369l-10 14M126 369l10 14"/>
+        <path d="M58 380v-34M58 356l-14-14M58 360l12-12"/>
+        <path d="M58 346c-18-2-26-16-22-28 14-4 26 6 24 18M58 342c16-6 28-2 30 12-10 8-24 4-30-6"/>
+        <path d="M0 390c120-14 220-10 340 0s260 10 380-4" stroke-dasharray="2 12" opacity=".55"/>
+      </g>
+    </symbol>
+
+    <symbol id="ck-ill-alms" viewBox="0 0 160 120">
+      <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="72" cy="34" r="9"/>
+        <path d="M72 43c-9 0-15 8-17 19l-5 27h44l-5-27c-2-11-8-19-17-19Z"/>
+        <path d="M55 60l34 14" stroke="var(--ck-gold)"/>
+        <path d="M50 86c0 13 10 21 22 21s22-8 22-21Z" fill="var(--ck-gold)" fill-opacity=".22"/>
+        <path d="M44 86h56M56 92h32"/>
+        <path d="M72 96v9"/>
+        <path d="M104 92h16l-2 15h-12Z"/>
+        <path d="M102 92c4-6 16-6 20 0" fill="var(--ck-gold)" fill-opacity=".28"/>
+        <path d="M20 112h120" stroke-dasharray="2 8" opacity=".55"/>
+        <path d="M16 62h22M122 54h22M18 78h14" opacity=".4"/>
+        <circle cx="132" cy="24" r="8" stroke="var(--ck-gold)"/>
+        <path d="M132 10v-4M132 42v-4M118 24h-4M150 24h-4M122 14l-3-3M145 37l-3-3M142 14l3-3M119 37l3-3" stroke="var(--ck-gold)"/>
+      </g>
+    </symbol>
+
+    <symbol id="ck-ill-street" viewBox="0 0 160 120">
+      <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 52l28-20 28 20M18 52h40v50H18Z"/>
+        <path d="M56 48l26-18 26 18M64 48h36v54H64Z"/>
+        <path d="M102 54l22-16 22 16M108 54h44v48h-44Z"/>
+        <path d="M24 62h10v10H24ZM46 62h8v10h-8ZM70 60h9v11h-9ZM86 60h9v11h-9ZM114 62h12v10h-12ZM132 62h10v10h-10Z" fill="var(--ck-gold)" fill-opacity=".28"/>
+        <path d="M32 84h12v18M46 84h8M72 84h20M72 96h20M114 84h14v12h-14Z"/>
+        <path d="M24 76h28M70 76h24M114 76h32" stroke-dasharray="2 5" opacity=".65"/>
+        <path d="M0 106c22-5 40-5 62 0s42 5 64 0 26-5 34-3" stroke-dasharray="2 8" opacity=".6"/>
+        <path d="M118 104a7 7 0 1 0 14 0 7 7 0 1 0-14 0M82 104a6 6 0 1 0 12 0 6 6 0 1 0-12 0" stroke-width="1.4"/>
+        <path d="M90 104l12-10 12 10 6-8M102 94v-8M96 86h12" stroke-width="1.4"/>
+        <path d="M12 108V92M12 98l-6-6M12 100l7-7" stroke-width="1.4" opacity=".7"/>
+        <circle cx="136" cy="24" r="8" stroke="var(--ck-gold)"/>
+        <path d="M136 8v-4M152 24h4M120 24h-4" stroke="var(--ck-gold)"/>
+      </g>
+    </symbol>
+
+    <symbol id="ck-ill-coffee" viewBox="0 0 160 120">
+      <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 36c14-6 28-6 42 0s28 6 42 0 28-6 42 0" opacity=".55"/>
+        <path d="M118 34c10 5 20 5 30 0"/>
+        <path d="M128 34v-14M128 22c7-5 14-2 16 4"/>
+        <circle cx="145" cy="25" r="2.5" fill="var(--ck-gold)" stroke="none"/>
+        <path d="M30 86h100M42 86v22M118 86v22"/>
+        <path d="M64 64h32l-4 22H68Z"/>
+        <path d="M66 72h28v6H66Z" fill="var(--ck-gold)" fill-opacity=".45"/>
+        <ellipse cx="80" cy="89" rx="25" ry="5"/>
+        <path d="M68 50h24v14H68ZM70 46h20M73 50v14M87 50v14"/>
+        <path d="M76 34c-4-6 4-8 0-14M90 34c4-6-4-8 0-14" opacity=".7"/>
+        <path d="M24 78c0-6 8-6 8 0M24 78h8l-1 10h-6Z"/>
+        <path d="M116 96h24v4h-24Z"/>
+        <path d="M120 100v8M136 100v8"/>
+        <circle cx="22" cy="22" r="8" stroke="var(--ck-gold)"/>
+        <path d="M22 8v-4M36 22h4M4 22h4" stroke="var(--ck-gold)"/>
+      </g>
+    </symbol>
+
+    <symbol id="ck-ill-temple" viewBox="0 0 160 120">
+      <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M34 96h92v12H34Z"/>
+        <path d="M70 96V78h20v18" fill="var(--ck-gold)" fill-opacity=".3"/>
+        <path d="M26 78l54-32 54 32"/>
+        <path d="M26 78c16 7 92 7 108 0"/>
+        <path d="M50 58l30-18 30 18M50 58c10 5 50 5 60 0"/>
+        <path d="M80 40V28M74 32h12"/>
+        <path d="M38 72l42-24 42 24M58 58l22-13 22 13" opacity=".5"/>
+        <path d="M62 108c-6-8 6-12 0-22M98 108c6-8-6-12 0-22"/>
+        <path d="M40 84h16v9H40ZM104 84h16v9h-16Z" stroke-dasharray="2 4" opacity=".7"/>
+        <path d="M46 88c2-3 4-3 6 0" stroke="var(--ck-gold)"/>
+        <path d="M110 88c2-3 4-3 6 0" stroke="var(--ck-gold)"/>
+        <path d="M132 108V92M132 98l-6-6M132 100l6-6" stroke-width="1.4" opacity=".7"/>
+        <circle cx="22" cy="24" r="8" stroke="var(--ck-gold)"/>
+        <path d="M22 10v-4M36 24h4M4 24h4M12 14l-3-3M31 33l-3-3" stroke="var(--ck-gold)"/>
+      </g>
+    </symbol>
+
+    <symbol id="ck-ill-kaeng" viewBox="0 0 160 120">
+      <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="110" cy="38" r="17" stroke="var(--ck-gold)"/>
+        <path d="M110 12V6M110 70v-6M84 38h-6M142 38h-6M92 20l-4-4M128 56l4 4M128 20l4-4M92 56l-4 4" stroke="var(--ck-gold)"/>
+        <path d="M0 72l30-18 22 12 28-22 30 24 22-10 28 14"/>
+        <path d="M10 84c18-6 34-6 52 0s34 6 52 0 28-6 36-2" stroke-dasharray="2 8" opacity=".6"/>
+        <path d="M4 100h152M4 110h152" stroke-dasharray="2 8" opacity=".4"/>
+        <path d="M46 96l8-14 10 4 6-8 10 12 8-4 8 10"/>
+        <path d="M96 98l7-11 9 3 6-7 9 11 7-3 7 7"/>
+        <path d="M54 88l6 4M66 88l5 5M104 90l5 3M116 90l5 5" opacity=".5"/>
+        <path d="M16 88c10 8 26 8 36 0"/>
+        <path d="M34 88V72M34 76c8-5 15-2 17 5"/>
+        <circle cx="51" cy="81" r="2.5" fill="var(--ck-gold)" stroke="none"/>
+        <path d="M120 62h24M14 64h20" opacity=".45"/>
+        <path d="M74 24c6-6 12-6 18 0 6-6 12-6 18 0" stroke-width="1.5" opacity=".75"/>
+      </g>
+    </symbol>
+
+    <symbol id="ck-icon-sun" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <circle cx="12" cy="12" r="4.5" fill="var(--ck-gold)" fill-opacity=".35"/>
+        <path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/>
+      </g>
+    </symbol>
+
+    <symbol id="ck-icon-alms" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 13h14c0 5-3 7-7 7s-7-2-7-7Z" fill="var(--ck-gold)" fill-opacity=".3"/>
+        <path d="M7 13c0-3 10-3 10 0M12 13V7M9 7h6"/>
+        <path d="M12 7c-1.5-2 1.5-3 0-5"/>
+      </g>
+    </symbol>
+
+    <symbol id="ck-icon-street" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 11l9-7 9 7M5 11v9h14v-9"/>
+        <path d="M9 20v-6h6v6"/>
+        <path d="M7 12h3v3H7Z" fill="var(--ck-gold)" fill-opacity=".4"/>
+        <path d="M14 12h3v3h-3Z"/>
+      </g>
+    </symbol>
+
+    <symbol id="ck-icon-coffee" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5Z"/>
+        <path d="M16 10h2a2 2 0 0 1 0 4h-2"/>
+        <path d="M6 9h8" stroke="var(--ck-gold)"/>
+        <path d="M8 6c-1-2 1-3 0-5M12 6c-1-2 1-3 0-5" opacity=".7"/>
+      </g>
+    </symbol>
+
+    <symbol id="ck-icon-temple" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 10l10-7 10 7M5 10v10h14V10"/>
+        <path d="M10 20v-6h4v6" fill="var(--ck-gold)" fill-opacity=".4"/>
+        <path d="M12 3V1M9 7h6" opacity=".6"/>
+      </g>
+    </symbol>
+
+    <symbol id="ck-icon-kaeng" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4" stroke="var(--ck-gold)"/>
+        <path d="M12 1v2M19 8h2M3 8h2M16 3l1.5 1.5" stroke="var(--ck-gold)"/>
+        <path d="M2 19l4-5 4 2 3-4 4 5 5-3"/>
+        <path d="M2 22h20" stroke-dasharray="2 3" opacity=".6"/>
+      </g>
+    </symbol>
+
+    <symbol id="ck-icon-bus" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="4" width="16" height="13" rx="2"/>
+        <path d="M6 7h12v4H6Z" fill="var(--ck-gold)" fill-opacity=".35"/>
+        <path d="M8 20a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0-3 0M13 20a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0-3 0"/>
+        <path d="M7 17v3M17 17v3"/>
+      </g>
+    </symbol>
+
+    <symbol id="ck-icon-train" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="3" width="14" height="13" rx="3"/>
+        <path d="M8 6h8v5H8Z" fill="var(--ck-gold)" fill-opacity=".35"/>
+        <path d="M8 20a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0-3 0M13 20a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0-3 0"/>
+        <path d="M5 17l-2 4M19 17l2 4M8 16h8"/>
+      </g>
+    </symbol>
+
+    <symbol id="ck-icon-car" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 12l2-5h14l2 5v5H3Z"/>
+        <path d="M7 8l1.5-3h7L17 8" opacity=".7"/>
+        <path d="M5 12h14" stroke="var(--ck-gold)"/>
+        <path d="M7 19a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0-3 0M14 19a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0-3 0"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="ck-page">
+  <a class="ck-skip" href="#main">ข้ามไปเนื้อหา</a>
+
+  <header class="ck-header">
+    <div class="ck-header__bar">
+      <a class="ck-brand" href="#top" aria-label="เชียงคาน กลับขึ้นด้านบน">
+        <svg class="ck-brand__mark" viewBox="0 0 24 24" aria-hidden="true"><use href="#ck-icon-sun"></use></svg>
+        <span class="ck-brand__text">
+          <span class="ck-brand__name">เชียงคาน</span>
+          <span class="ck-brand__tag">ริมโขง · เลย</span>
+        </span>
+      </a>
+      <nav class="ck-nav" aria-label="เมนูหลัก">
+        <a href="#stops">5 หมุดเช้า</a>
+        <a href="#planner">วางแผนทริป</a>
+        <a href="#passport">หนังสือเดินทาง</a>
+        <a href="#travel">ไปยังไง</a>
+      </nav>
+      <div class="ck-header__end">
+        <div class="ck-header__status" id="ckStampStatus" role="status" aria-live="polite" aria-atomic="true">ประทับแล้ว 0/5</div>
+        <a class="ck-btn ck-btn--gold ck-header__cta" href="#planner">วางแผนทริป</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="ck-hero" id="top" aria-labelledby="ck-hero-title">
+      <div class="ck-hero__topo" aria-hidden="true"></div>
+      <div class="ck-hero__inner">
+        <div class="ck-hero__copy">
+          <p class="ck-eyebrow ck-eyebrow--light">เมืองรองริมโขง · จังหวัดเลย</p>
+          <h1 id="ck-hero-title">ตื่นเช้า<br><span>ให้ทัน</span></h1>
+          <p class="ck-hero__sub">เชียงคานต้อนรับ<br>คนที่ยอมตื่นก่อนชาวบ้าน</p>
+          <p class="ck-hero__lede">ที่นี่ไม่ได้ขายความตื่นเต้น ขายความสงบที่ตื่นเช้าให้ทันได้ — ห้าหมุดเล็ก&nbsp;ๆ ริมโขงที่ทำให้สองวันหนึ่งคืนไม่ต้องรีบ</p>
+          <div class="ck-hero__actions">
+            <a class="ck-btn ck-btn--gold" href="#planner">เริ่มวางแผนทริป</a>
+            <a class="ck-btn ck-btn--outline-light" href="#stops">ดู 5 หมุดเช้า</a>
+          </div>
+          <p class="ck-hero__note">แคมเปญสมมติเพื่อการออกแบบ · ข้อมูลเวลาและราคาเป็นตัวอย่าง</p>
+        </div>
+        <div class="ck-hero__art" aria-hidden="true">
+          <svg viewBox="0 0 720 420"><use href="#ck-ill-hero"></use></svg>
+        </div>
+      </div>
+      <div class="ck-ticker" aria-hidden="true">
+        <div class="ck-ticker__track">
+          <span>หมอกเช้า <b>·</b> บ้านไม้เก่า <b>·</b> กาแฟริมโขง <b>·</b> พระอาทิตย์ขึ้นที่แก่งคุดคู้ <b>·</b></span>
+          <span>หมอกเช้า <b>·</b> บ้านไม้เก่า <b>·</b> กาแฟริมโขง <b>·</b> พระอาทิตย์ขึ้นที่แก่งคุดคู้ <b>·</b></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="ck-section ck-stops" id="stops" aria-labelledby="ck-stops-title">
+      <div class="ck-section__head">
+        <p class="ck-eyebrow">01 / 5 หมุดเช้า</p>
+        <h2 id="ck-stops-title">ห้าหมุดที่ทำให้เช้าวันหนึ่งมีความหมาย</h2>
+        <p class="ck-section__intro">สี่หมุดอยู่ในเช้าวันแรก อีกหมุดรออยู่เช้าวันที่สอง — ไม่ต้องรีบ แต่ต้องตื่นให้ทัน</p>
+      </div>
+      <div class="ck-stops__map">
+        <div class="ck-stops__line" aria-hidden="true"></div>
+        {% for stop in ck.stops %}
+        <article class="ck-stop" data-stop="{{ stop.id }}" data-stamped="false" aria-labelledby="ck-stop-{{ stop.id }}-title">
+          <div class="ck-stop__top">
+            <span class="ck-stop__num">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+            <span class="ck-stop__day">{% if stop.day == 2 %}เช้าวันที่ 2{% else %}วันที่ 1{% endif %}</span>
+          </div>
+          <div class="ck-stop__art">
+            <svg viewBox="0 0 160 120" aria-hidden="true"><use href="#ck-ill-{{ stop.illustration }}"></use></svg>
+            <span class="ck-stamp" data-stamp-mark="{{ stop.id }}" aria-hidden="true">
+              <span class="ck-stamp__ring">
+                <svg viewBox="0 0 24 24"><use href="#ck-icon-{{ stop.illustration }}"></use></svg>
+                <span class="ck-stamp__time">{{ stop.time }}</span>
+              </span>
+            </span>
+          </div>
+          <div class="ck-stop__body">
+            <p class="ck-stop__time"><span class="ck-stop__time-value">{{ stop.time }}</span><span class="ck-stop__dur">{{ stop.duration }} นาที</span></p>
+            <h3 id="ck-stop-{{ stop.id }}-title">{{ stop.title }}</h3>
+            <p class="ck-stop__blurb">{{ stop.blurb }}</p>
+            <p class="ck-stop__note">{{ stop.note }}</p>
+          </div>
+          <button class="ck-stamp-btn" type="button" data-stamp="{{ stop.id }}" aria-pressed="false">
+            <span data-stamp-label>ประทับตรา</span>
+            <span class="ck-sr-only">{{ stop.title }}</span>
+          </button>
+        </article>
+        {% endfor %}
+      </div>
+      <p class="ck-stops__hint">ตราประทับคือความทรงจำ แผนคือการเดินทาง — เลือกแยกกันได้</p>
+    </section>
+
+    <section class="ck-section ck-planner" id="planner" aria-labelledby="ck-planner-title">
+      <div class="ck-section__head">
+        <p class="ck-eyebrow">02 / วางแผนทริป</p>
+        <h2 id="ck-planner-title">สองวันหนึ่งคืน<br>ที่คุณจัดเองได้</h2>
+        <p class="ck-section__intro">เลือก 3–5 หมุดที่อยากไป แล้วเราจะเรียงเป็นไทม์ไลน์ให้ — เวลาและราคาเป็นตัวอย่าง ปรับตามจังหวะของคุณได้เลย</p>
+      </div>
+      <noscript><p class="ck-noscript">ตัววางแผนและตราประทับต้องใช้ JavaScript — เนื้อหาทั้งหมดยังอ่านได้ตามปกติ</p></noscript>
+      <div class="ck-planner__grid">
+        <div class="ck-planner__controls">
+          <fieldset class="ck-picker">
+            <legend>เลือกหมุดที่อยากไป <span class="ck-picker__count" id="ckPlanCount">0/5</span></legend>
+            <div class="ck-picker__list">
+              {% for stop in ck.stops %}
+              <label class="ck-chip" data-plan-chip="{{ stop.id }}">
+                <input class="ck-sr-only" type="checkbox" value="{{ stop.id }}" data-plan-stop>
+                <span class="ck-chip__box" aria-hidden="true"></span>
+                <span class="ck-chip__text">
+                  <span class="ck-chip__time">{{ stop.time }}</span>
+                  <span class="ck-chip__title">{{ stop.title }}</span>
+                  <span class="ck-chip__day">{% if stop.day == 2 %}เช้าวันที่ 2{% else %}วันที่ 1{% endif %}</span>
+                </span>
+              </label>
+              {% endfor %}
+            </div>
+          </fieldset>
+          <p class="ck-picker__message" id="ckPlanMessage" role="status" aria-live="polite">เลือกอย่างน้อย 3 หมุดเพื่อเริ่มวางแผน</p>
+          <div class="ck-planner__actions">
+            <button class="ck-btn ck-btn--gold" type="button" id="ckSavePlan" aria-disabled="true" disabled>บันทึกแผนนี้</button>
+            <button class="ck-btn ck-btn--outline" type="button" id="ckRandomPlan">สุ่มแผนให้ฉัน</button>
+          </div>
+          <p class="ck-planner__save-note" id="ckSaveNote">ยังไม่มีแผนที่บันทึก</p>
+        </div>
+        <div class="ck-planner__output">
+          <div class="ck-timeline" id="ckTimeline" role="group" aria-label="ไทม์ไลน์ทริป 2 วัน 1 คืน">
+            <p class="ck-timeline__empty" id="ckTimelineEmpty">ยังไม่ได้เลือกหมุด — เริ่มจาก 3 หมุดที่อยากไปก่อน</p>
+          </div>
+          <div class="ck-summary" id="ckSummary" hidden>
+            <p class="ck-summary__label">สรุปแผน</p>
+            <p class="ck-summary__time" id="ckSummaryTime"></p>
+            <p class="ck-summary__total" id="ckSummaryTotal"></p>
+            <dl class="ck-budget" id="ckBudget"></dl>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ck-section ck-passport-section" id="passport" aria-labelledby="ck-passport-title">
+      <div class="ck-section__head">
+        <p class="ck-eyebrow ck-eyebrow--light">03 / หนังสือเดินทาง</p>
+        <h2 id="ck-passport-title">เก็บความทรงจำ<br>ไว้ในเล่มจิ๋ว</h2>
+        <p class="ck-section__intro">ทุกหมุดที่คุณประทับจะถูกเก็บไว้ที่นี่ ครบ 5 หมุดเมื่อไหร่ หน้ากระดาษสุดท้ายจะเปิดออก</p>
+      </div>
+      <div class="ck-passport" id="ckPassport">
+        <div class="ck-passport__cover">
+          <svg class="ck-passport__sun" viewBox="0 0 24 24" aria-hidden="true"><use href="#ck-icon-sun"></use></svg>
+          <p class="ck-passport__kicker">หนังสือเดินทางเล่มจิ๋ว</p>
+          <p class="ck-passport__title">เชียงคาน</p>
+          <p class="ck-passport__sub">ริมโขง · เลย</p>
+          <p class="ck-passport__quote">“ตื่นเช้าให้ทัน<br>แล้ววันจะยาวขึ้นเอง”</p>
+          <p class="ck-passport__edition">DEMO EDITION · 2026</p>
+        </div>
+        <div class="ck-passport__page">
+          <div class="ck-passport__page-head">
+            <p>หนังสือเดินทางของฉัน</p>
+            <p id="ckPassportCount">0/5</p>
+          </div>
+          <div class="ck-route" aria-hidden="true">
+            <svg viewBox="0 0 40 420" preserveAspectRatio="none">
+              <path class="ck-route__base" d="M20 10 C 16 80, 24 140, 20 210 S 16 330, 20 410" pathLength="1"/>
+              <path class="ck-route__progress" id="ckRouteProgress" d="M20 10 C 16 80, 24 140, 20 210 S 16 330, 20 410" pathLength="1"/>
+            </svg>
+          </div>
+          <ol class="ck-passport__slots">
+            {% for stop in ck.stops %}
+            <li class="ck-passport__slot" data-passport-slot="{{ stop.id }}">
+              <span class="ck-passport__dot" aria-hidden="true"></span>
+              <div class="ck-passport__slot-text">
+                <span class="ck-passport__slot-num">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+                <span class="ck-passport__slot-title">{{ stop.title }}</span>
+                <span class="ck-passport__slot-time">{{ stop.time }} · {% if stop.day == 2 %}เช้าวันที่ 2{% else %}วันที่ 1{% endif %}</span>
+                <span class="ck-passport__slot-status" data-slot-status>ยังไม่ได้ประทับ</span>
+              </div>
+              <span class="ck-stamp ck-stamp--passport" data-passport-stamp="{{ stop.id }}" aria-hidden="true">
+                <span class="ck-stamp__ring">
+                  <svg viewBox="0 0 24 24"><use href="#ck-icon-{{ stop.illustration }}"></use></svg>
+                  <span class="ck-stamp__time">{{ stop.time }}</span>
+                </span>
+              </span>
+            </li>
+            {% endfor %}
+          </ol>
+          <div class="ck-passport__complete" id="ckPassportComplete" hidden>
+            <p class="ck-passport__complete-kicker">ใบปิดท้าย</p>
+            <h3>ครบทั้ง 5 หมุดแล้ว</h3>
+            <p>เชียงคานไม่ได้ขอให้คุณรีบไปไหน — แค่ตื่นให้ทันเช้าวันหนึ่งก็พอ เก็บเล่มนี้ไว้ แล้วกลับมาอีกครั้งเมื่ออยากฟังเสียงเรือ</p>
+            <div class="ck-passport__complete-actions">
+              <button class="ck-btn ck-btn--gold" type="button" id="ckPrint">พิมพ์เล่มนี้</button>
+              <button class="ck-btn ck-btn--outline" type="button" id="ckShare">คัดลอกลิงก์แชร์</button>
+            </div>
+            <p class="ck-sr-only" id="ckShareStatus" role="status" aria-live="polite"></p>
+          </div>
+          <p class="ck-passport__empty-note" id="ckPassportEmptyNote">ยังไม่ครบก็ไม่เป็นไร — ค่อย&nbsp;ๆ เก็บในจังหวะของคุณ</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="ck-section ck-travel" id="travel" aria-labelledby="ck-travel-title">
+      <div class="ck-section__head">
+        <p class="ck-eyebrow">04 / ไปยังไง</p>
+        <h2 id="ck-travel-title">ไปให้ถึง<br>ก่อนแดดขึ้น</h2>
+        <p class="ck-section__intro">เชียงคานอยู่ไกลจากกรุงเทพฯ พอสมควร — เลือกทางที่เหมาะกับเวลาและงบของคุณ</p>
+      </div>
+      <div class="ck-travel__grid">
+        <article class="ck-travel-card">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ck-icon-bus"></use></svg>
+          <h3>รถทัวร์จากกรุงเทพฯ</h3>
+          <p>ขึ้นที่หมอชิต 2 รถออกช่วงเย็น ใช้เวลาประมาณ 9–10 ชั่วโมง ถึงเชียงคานเช้ามืด</p>
+          <p class="ck-travel-card__note">ตารางและราคาเปลี่ยนได้ ตรวจสอบกับผู้ให้บริการก่อนเดินทาง</p>
+        </article>
+        <article class="ck-travel-card">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ck-icon-train"></use></svg>
+          <h3>รถไฟ + รถต่อ</h3>
+          <p>ไม่มีสถานีรถไฟในจังหวัดเลย — นั่งรถไฟถึงอุดรธานีหรือหนองคาย แล้วต่อรถตู้/รถทัวร์เข้าเชียงคาน</p>
+          <p class="ck-travel-card__note">เผื่อเวลาเดินทางต่อประมาณ 3–4 ชั่วโมง</p>
+        </article>
+        <article class="ck-travel-card">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ck-icon-car"></use></svg>
+          <h3>ขับรถเอง</h3>
+          <p>จากกรุงเทพฯ ประมาณ 7–8 ชั่วโมง ผ่านสระบุรี–นครราชสีมา–ขอนแก่น–เลย</p>
+          <p class="ck-travel-card__note">ถนนชายโขงแคบ ควรจอดรถที่ที่พักแล้วเดิน</p>
+        </article>
+      </div>
+      <div class="ck-travel__season">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ck-icon-sun"></use></svg>
+        <p><strong>ช่วงที่ไปสวย: พฤศจิกายน–กุมภาพันธ์</strong><span>อากาศเย็น มีหมอกตอนเช้า; ถ้าอยากเห็นแก่งหินชัด น้ำลดช่วงกุมภาพันธ์–พฤษภาคม</span></p>
+      </div>
+      <p class="ck-travel__disclaimer">※ ข้อมูลเวลา ราคา และเส้นทางเป็นตัวอย่างเพื่อการออกแบบ ไม่ใช่การรับจอง — โปรดตรวจสอบกับผู้ให้บริการก่อนเดินทาง</p>
+    </section>
+
+    <section class="ck-section ck-faq" id="faq" aria-labelledby="ck-faq-title">
+      <div class="ck-section__head">
+        <p class="ck-eyebrow">05 / คำถามที่เจอบ่อย</p>
+        <h2 id="ck-faq-title">ก่อนออกเดินทาง</h2>
+        <p class="ck-section__intro">คำถามที่เพื่อน&nbsp;ๆ ถามบ่อยก่อนไปเชียงคาน — ตอบแบบสั้น&nbsp;ๆ ตามที่เราเจอมา</p>
+      </div>
+      <div class="ck-faq__list">
+        <details class="ck-faq__item">
+          <summary><span>ไปกี่วันดี</span><span class="ck-faq__icon" aria-hidden="true"></span></summary>
+          <div class="ck-faq__answer"><p>2 วัน 1 คืน พอสำหรับ 5 หมุดและเวลาเดินเล่นริมโขง ถ้ามี 3 วัน จะได้นั่งกาแฟนานขึ้นโดยไม่ต้องดูนาฬิกา</p></div>
+        </details>
+        <details class="ck-faq__item">
+          <summary><span>ต้องตื่นกี่โมง</span><span class="ck-faq__icon" aria-hidden="true"></span></summary>
+          <div class="ck-faq__answer"><p>ถ้าอยากใส่บาตรและเห็นหมอก เริ่มประมาณ 06:00 ถ้าอยากไปแก่งคุดคู้ให้ทันพระอาทิตย์ขึ้น ควรออกจากที่พักประมาณ 05:15–05:30</p></div>
+        </details>
+        <details class="ck-faq__item">
+          <summary><span>เดินทางจากกรุงเทพฯ ยังไง</span><span class="ck-faq__icon" aria-hidden="true"></span></summary>
+          <div class="ck-faq__answer"><p>ที่นอนสบายที่สุดคือรถทัวร์รอบเย็น ประมาณ 9–10 ชั่วโมง อีกทางคือรถไฟถึงอุดรธานีหรือหนองคาย แล้วต่อรถเข้าเชียงคาน</p></div>
+        </details>
+        <details class="ck-faq__item">
+          <summary><span>ไปช่วงไหนสวย</span><span class="ck-faq__icon" aria-hidden="true"></span></summary>
+          <div class="ck-faq__answer"><p>พฤศจิกายน–กุมภาพันธ์ อากาศเย็นและมีหมอก ถ้าอยากเห็นแก่งหินโผล่ชัด ให้เลือกช่วงกุมภาพันธ์–พฤษภาคมที่น้ำลด</p></div>
+        </details>
+        <details class="ck-faq__item">
+          <summary><span>เที่ยวเชียงคานทั้งวันได้ไหม</span><span class="ck-faq__icon" aria-hidden="true"></span></summary>
+          <div class="ck-faq__answer"><p>ได้ แต่เชียงคานเหมาะกับการไปช้า&nbsp;ๆ มากกว่า เช้าเก็บหมุด บ่ายพักผ่อน เย็นเดินตลาด — จะได้ไม่ต้องรีบข้ามวัน</p></div>
+        </details>
+        <details class="ck-faq__item">
+          <summary><span>มีอะไรต้องระวัง</span><span class="ck-faq__icon" aria-hidden="true"></span></summary>
+          <div class="ck-faq__answer"><p>แต่งกายสุภาพเมื่อเข้าวัด ถนนชายโขงแคบและมืดบางช่วง ควรพกไฟฉายเล็ก&nbsp;ๆ และตรวจสอบรอบรถกลับล่วงหน้า</p></div>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="ck-footer">
+    <div class="ck-footer__inner">
+      <div>
+        <p class="ck-footer__title">เชียงคาน — ตื่นเช้าให้ทัน</p>
+        <p class="ck-footer__note">แคมเปญสมมติเพื่อการออกแบบ · ภาพประกอบวาดเส้นด้วยมือ · ไม่มีรูปถ่าย stock</p>
+      </div>
+      <div class="ck-footer__meta">
+        <p>ริมโขง · เลย · ประเทศไทย</p>
+        <p>※ เว็บเดโมเพื่อการออกแบบ ไม่ใช่หน้าจองจริง</p>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script type="application/json" id="ck-data">{{ ck | jsonify }}</script>

@@ -12,12 +12,14 @@ portfolio for GitHub Pages.
 ## What this is
 
 A public portfolio for selected front-end and design work. It pairs an
-editorial project index with a preserved restaurant demo, built as a
-Jekyll project site and deployed with GitHub Actions.
+editorial project index with two interactive demos — a preserved
+restaurant site and a slow-morning travel campaign — built as a Jekyll
+project site and deployed with GitHub Actions.
 
 ## Who it's for
 
-- **Clients and collaborators** — see the live site and the ครัวตำย่า demo.
+- **Clients and collaborators** — see the live site and the ครัวตำย่า and
+  เชียงคาน demos.
 - **Developers** — read the source, run it locally, or reuse the structure
   for another small Jekyll project.
 
@@ -28,6 +30,9 @@ Jekyll project site and deployed with GitHub Actions.
 - `/krua-tumya/` — a Jekyll port of the ครัวตำย่าปากซอย restaurant demo,
   with its original markup, palette, fonts, copy, and interactions, plus a
   floating return link to the index.
+- `/chiang-khan/` — a travel campaign for a small Mekong town: five
+  morning stamps, a two-day planner, and a printable passport. The
+  times, prices, and routes are sample content, not a booking service.
 - `/404.html` — a matching not-found page.
 - `robots.txt` and `noindex` metadata — best-effort exclusion from search
   and AI crawlers. GitHub Pages is public, so this cannot be guaranteed.
@@ -78,8 +83,9 @@ mise exec -- npm run test:all
 This builds the site, typechecks every JavaScript file, validates the
 generated HTML, checks internal links and assets plus the noindex
 controls, runs the unit tests, then runs Playwright at 1440×1000 and
-390×844. The browser suite covers the project interactions, localStorage
-persistence, horizontal overflow, and WCAG A/AA with axe.
+390×844. The browser suite covers both demo interactions, localStorage
+persistence, share links, print styles, reduced motion, horizontal
+overflow, and WCAG A/AA with axe.
 
 Individual checks:
 
@@ -100,10 +106,13 @@ under `artifacts/screenshots/` for visual review.
 .
 ├── index.html, 404.html        # home and not-found pages
 ├── krua-tumya/                 # preserved restaurant demo
+├── chiang-khan/                # travel campaign demo
 ├── _layouts/, _includes/       # Jekyll templates
 ├── _data/projects.yml          # project index data
+├── _data/chiang-khan.yml       # campaign copy, stops, and sample budget
 ├── assets/css/                 # home styles
-├── assets/krua-tumya/          # demo assets and JavaScript
+├── assets/krua-tumya/          # preserved demo assets and JavaScript
+├── assets/chiang-khan/         # campaign CSS, JavaScript, and OFL fonts
 ├── scripts/                    # preview, screenshots, and static checks
 ├── tests/                      # unit tests and Playwright specs
 └── .github/workflows/          # CI, Pages, and release automation
@@ -112,12 +121,14 @@ under `artifacts/screenshots/` for visual review.
 ## Notes
 
 - No analytics, trackers, cookies, or third-party runtime dependencies.
-  Google Fonts on the demo page are part of the original design.
+  Google Fonts on the preserved demo page are part of the original
+  design; the Chiang Khan page self-hosts its OFL fonts.
 - Search indexing is intentionally disabled with `robots.txt` and
   `noindex` metadata. This is best-effort on GitHub Pages.
 - Accessibility is tested with axe. The preserved demo has one documented
   palette exception; see
-  [CONTRIBUTING.md](CONTRIBUTING.md#accessibility).
+  [CONTRIBUTING.md](CONTRIBUTING.md#accessibility). The Chiang Khan page
+  has no exceptions.
 - All JavaScript — browser runtime, Node scripts, tests, and Playwright
   config — follows the vendored `functional-design-skills` pack. See
   [AGENTS.md](AGENTS.md) for the scope and rules.

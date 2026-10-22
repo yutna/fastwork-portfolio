@@ -8,6 +8,6 @@
 
 <a class="portfolio-return" href="{{ '/' | relative_url }}" title="Back to the portfolio" aria-label="Back to the portfolio">← Portfolio</a>
 
-<script type="module" src="{{ '/assets/krua-tumya/js/main.mjs' | relative_url }}"></script>
+<script type="module" src="{{ page.project_js | default: '/assets/krua-tumya/js/main.mjs' | relative_url }}"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 // @ts-check
 /**
- * Capture the desktop and mobile audit screenshots for both pages.
+ * Capture the desktop and mobile audit screenshots for every page.
  *
  * The script starts its own static preview on the production base path so it
  * works without a separate terminal. Output stays under artifacts/, which is
@@ -57,6 +57,15 @@ const settle = async (page) => {
   await page.waitForLoadState('networkidle');
   await page.evaluate(() => document.fonts.ready);
   await page.evaluate(async () => {
+    const step = Math.max(window.innerHeight, 320);
+    for (let y = 0; y < document.body.scrollHeight; y += step) {
+      window.scrollTo(0, y);
+      await new Promise((resolve) => setTimeout(resolve, 80));
+    }
+    window.scrollTo(0, 0);
+  });
+  await page.waitForLoadState('networkidle');
+  await page.evaluate(async () => {
     await Promise.all(Array.from(document.images, (image) => image.decode().catch(() => undefined)));
   });
   await page.waitForTimeout(250);
@@ -86,7 +95,8 @@ try {
 
     for (const [pageName, path] of [
       ['home', ''],
-      ['krua-tumya', 'krua-tumya/']
+      ['krua-tumya', 'krua-tumya/'],
+      ['chiang-khan', 'chiang-khan/']
     ]) {
       await page.goto(`${BASE}/${path}`, { waitUntil: 'networkidle' });
       await settle(page);
