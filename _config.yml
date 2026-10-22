@@ -13,6 +13,7 @@ liquid:
 
 exclude:
   - AGENTS.md
+  - assets/krua-tumya/js/AGENTS.md
   - CLAUDE.md
   - CODE_OF_CONDUCT.md
   - CONTRIBUTING.md

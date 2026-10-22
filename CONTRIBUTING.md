@@ -41,6 +41,10 @@ The preview runs at <http://127.0.0.1:4001/fastwork-portfolio/>. The project
 page is a preserved demo: do not redesign it or change its palette, fonts,
 copy, or behaviour. The only visual addition is the floating Portfolio link.
 
-All JavaScript is plain ESM with JSDoc types checked by `tsc`. Read
-`AGENTS.md` and the vendored `functional-design-skills` pack before changing
-a module boundary or the browser shell.
+All JavaScript in the repository — browser code, Node scripts, tests, and
+`playwright.config.mjs` — is plain ESM with JSDoc types checked by `tsc`.
+Every tracked JavaScript file follows `functional-design-skills`: read
+`AGENTS.md` and the vendored pack before changing it. Calibration decides
+how much design each file needs; config and tooling usually take the
+lightest row. Jekyll templates, HTML, CSS, docs, and CI are outside FDS
+scope.
