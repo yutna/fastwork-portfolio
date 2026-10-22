@@ -2,26 +2,37 @@
 
 ## Design rules
 
-This codebase follows functional design. The `functional-design` skill
-is the index; the rest of the pack carries one rule each.
+Functional design (FDS) governs every tracked JavaScript file in this
+repository. Jekyll/Liquid, HTML, CSS, docs, CI YAML, Ruby, JSON, and
+non-JavaScript configuration are outside its scope.
 
-- This project's own conventions win. The pack decides what they leave
-  open, and a pack red flag is a place to look, not a finding.
-- Before designing a new module, workflow, endpoint, or bounded
-  context, read `functional-design` and follow its design loop.
-- For anything smaller, use its calibration table to decide how much
-  design the task warrants. For one function in a module that already
-  exists, that is an honest signature and a precise name, nothing more.
-- Before finishing a change that added or reshaped a type, a signature,
-  or a module boundary, run the checklist in
-  `functional-reviewing-functional-design`.
-- Use `functional-javascript` for concrete syntax.
+In scope:
+
+- `assets/**/*.{js,mjs}` — currently `assets/krua-tumya/js/*.mjs`
+- `scripts/**/*.{js,mjs}`
+- `tests/**/*.{js,mjs}`
+- `playwright.config.mjs`
+
+For every in-scope change:
+
+- Read the `functional-design` skill index and name the calibration row.
+  A row that skips a rule binds nothing.
+- Run the "Is the problem decided?" check. If the rules are not settled,
+  stop and ask before modelling.
+- Apply every rule the chosen row binds, then use
+  `functional-javascript` for syntax. For tests, also read
+  `functional-testing-functional-code`.
+- Run the checklist in `functional-reviewing-functional-design` before
+  finishing any in-scope change.
+- This project's conventions win over the pack. Calibration decides how
+  much design a file needs: config and tooling usually take the lightest
+  row, and over-modelling is itself a design failure.
 
 The pack is vendored at `vendor/functional-design-skills/` (version
 3.3.0). Start at
 `vendor/functional-design-skills/plugin/skills/functional-design/SKILL.md`.
-The `.opencode/skills/functional-design` bridge tells OpenCode where to
-find it. Do not modify the vendored pack; update it as a whole when the
+The `.opencode/skills/functional-design` bridge is the OpenCode entry
+point. Do not modify the vendored pack; update it as a whole when the
 upstream version changes.
 
 ## Project
@@ -46,6 +57,10 @@ GitHub Pages project site at <https://yutna.github.io/fastwork-portfolio/>.
 
 ## JavaScript
 
+- All tracked JavaScript follows FDS. The areas are browser runtime,
+  Node scripts, tests, and Playwright config. The runtime module rules
+  live in `assets/krua-tumya/js/AGENTS.md`; read that file before
+  changing browser code.
 - Plain ESM with JSDoc types checked by `tsc` (`checkJs`, `strict`).
 - Keep pure rules in `assets/krua-tumya/js/core.mjs`. DOM, storage,
   timers, and animation belong in `shell.mjs`; lookups belong in
@@ -54,8 +69,11 @@ GitHub Pages project site at <https://yutna.github.io/fastwork-portfolio/>.
   or module-level shared data.
 - Expected failures are values, not exceptions. Programmer errors may
   throw. Use the existing `Result` shape.
-- No framework and no build step for browser code. Node scripts may use
-  `node:` built-ins and the dev dependencies already in `package.json`.
+- Node scripts use `node:` built-ins and the dev dependencies already in
+  `package.json`. Tests use `node:test` and Playwright.
+- `playwright.config.mjs` is configuration; give it the lightest
+  calibration row and do not add wrapper types.
+- No framework and no build step for browser code.
 
 ## Commands
 
