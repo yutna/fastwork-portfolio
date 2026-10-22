@@ -184,7 +184,7 @@ const renderEntry = (entry, content) => {
     case 'empty': {
       item.classList.add('ck-slot--note');
       time.textContent = 'ว่าง';
-      title.textContent = 'วันนี้ยังว่าง';
+      title.textContent = 'วันนี้พักได้';
       const text = document.createElement('p');
       text.className = 'ck-slot__text';
       text.textContent = 'เลือกหมุดเพิ่ม หรือพักตามอัธยาศัยก็ได้';
@@ -213,7 +213,7 @@ const renderDay = (day, content) => {
   title.textContent = `วันที่ ${day.day}`;
   const total = document.createElement('p');
   total.className = 'ck-day__total';
-  total.textContent = day.totalMinutes > 0 ? `รวม ${formatMinutes(day.totalMinutes)}` : 'ไม่มีหมุด';
+  total.textContent = day.totalMinutes > 0 ? `รวม ${formatMinutes(day.totalMinutes)}` : 'ยังไม่มีหมุด';
   head.append(title, total);
 
   const list = document.createElement('ol');
@@ -238,15 +238,15 @@ const renderPlan = (state, content) => {
     setText(
       els.planMessage,
       summary.count === 0
-        ? `เลือกอย่างน้อย ${MIN_PLAN_STOPS} หมุดเพื่อเริ่มวางแผน`
-        : `เลือกอีก ${MIN_PLAN_STOPS - summary.count} หมุดเพื่อเริ่มวางแผน`
+        ? `เลือกอย่างน้อย ${MIN_PLAN_STOPS} หมุด แล้วเราเริ่มได้`
+        : `อีก ${MIN_PLAN_STOPS - summary.count} หมุดก็เริ่มได้`
     );
     els.planMessage.dataset.state = 'warn';
   } else if (state.saved !== null && !dirty) {
-    setText(els.planMessage, 'บันทึกแผนนี้แล้ว — แก้ไขแล้วกดบันทึกอีกครั้ง');
+    setText(els.planMessage, 'บันทึกแผนนี้แล้ว — ถ้าแก้ไข อย่าลืมบันทึกอีกครั้ง');
     els.planMessage.dataset.state = 'saved';
   } else {
-    setText(els.planMessage, `เลือกแล้ว ${summary.count} จาก ${total} หมุด — กดบันทึกเมื่อพร้อม`);
+    setText(els.planMessage, `เลือกแล้ว ${summary.count} จาก ${total} หมุด — บันทึกไว้เมื่อพร้อม`);
     els.planMessage.dataset.state = 'ready';
   }
 
@@ -254,13 +254,13 @@ const renderPlan = (state, content) => {
     setText(
       els.saveNote,
       summary.count === 0
-        ? 'ยังไม่มีแผนที่บันทึก'
-        : 'ยังไม่มีแผนที่บันทึก — กดบันทึกเพื่อเก็บไว้'
+        ? 'ยังไม่ได้บันทึกแผนไว้'
+        : 'ยังไม่ได้บันทึกแผนไว้ — กดบันทึกเมื่อพร้อม'
     );
   } else if (dirty) {
-    setText(els.saveNote, 'มีการเปลี่ยนแปลงที่ยังไม่บันทึก');
+    setText(els.saveNote, 'มีการแก้ไขที่ยังไม่ได้บันทึก');
   } else {
-    setText(els.saveNote, 'บันทึกแล้ว · แผนนี้จะอยู่ต่อหลังรีเฟรช');
+    setText(els.saveNote, 'บันทึกแล้ว · แผนนี้จะยังอยู่เมื่อคุณกลับมา');
   }
 
   els.savePlan.disabled = !summary.canSave;
@@ -295,7 +295,7 @@ const renderPlan = (state, content) => {
 
   els.summary.hidden = summary.count === 0;
   if (summary.count > 0) {
-    setText(els.summaryTime, `เวลารวมโดยประมาณ ${formatMinutes(summary.totalMinutes)}`);
+    setText(els.summaryTime, `เวลารวมคร่าว ๆ ${formatMinutes(summary.totalMinutes)}`);
     setText(els.summaryTotal, `${formatBaht(summary.totalCost)} / คน`);
     els.budget.replaceChildren();
     for (const row of summary.budgetRows) {
@@ -478,7 +478,7 @@ export const start = () => {
         els.shareStatus,
         copied
           ? 'คัดลอกลิงก์แชร์แล้ว'
-          : 'คัดลอกอัตโนมัติไม่ได้ — คัดลอกลิงก์จากแถบที่อยู่'
+          : 'คัดลอกอัตโนมัติไม่ได้ — ลองคัดลอกจากแถบที่อยู่'
       );
     });
   });

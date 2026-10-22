@@ -29,23 +29,6 @@
     transition-duration: 0.01ms !important;
   }
 
-  .ck-ticker__track {
-    width: auto;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.35rem 1.5rem;
-    animation: none;
-  }
-
-  .ck-ticker__track > span:last-child {
-    display: none;
-  }
-
-  .ck-ticker__track span {
-    white-space: normal;
-    text-align: center;
-  }
-
   .ck-stamp {
     transition: none;
   }

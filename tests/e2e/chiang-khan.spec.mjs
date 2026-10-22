@@ -123,30 +123,30 @@ test('the planner requires three stops and saves an explicit snapshot', async ({
   await planChip(page, 'alms').click();
   await expect(page.locator('#ckPlanCount')).toHaveText('1/5');
   await expect(page.locator('#ckSavePlan')).toBeDisabled();
-  await expect(page.locator('#ckPlanMessage')).toContainText('เลือกอีก 2 หมุด');
+  await expect(page.locator('#ckPlanMessage')).toContainText('อีก 2 หมุดก็เริ่มได้');
   await expect(page.locator('#ckSummary')).toBeVisible();
   await expect(page.locator('#ckSummaryTotal')).toHaveText('430 บาท / คน');
 
   await planChip(page, 'coffee').click();
   await expect(page.locator('#ckPlanCount')).toHaveText('2/5');
   await expect(page.locator('#ckSavePlan')).toBeDisabled();
-  await expect(page.locator('#ckPlanMessage')).toContainText('เลือกอีก 1 หมุด');
+  await expect(page.locator('#ckPlanMessage')).toContainText('อีก 1 หมุดก็เริ่มได้');
   await expect(page.locator('#ckSummaryTotal')).toHaveText('610 บาท / คน');
 
   await planChip(page, 'temple').click();
   await expect(page.locator('#ckPlanCount')).toHaveText('3/5');
   await expect(page.locator('#ckSavePlan')).toBeEnabled();
   await expect(page.locator('#ckPlanMessage')).toContainText('เลือกแล้ว 3 จาก 5 หมุด');
-  await expect(page.locator('#ckSummaryTime')).toHaveText('เวลารวมโดยประมาณ 2 ชม. 30 น.');
+  await expect(page.locator('#ckSummaryTime')).toHaveText('เวลารวมคร่าว ๆ 2 ชม. 30 น.');
   await expect(page.locator('#ckSummaryTotal')).toHaveText('630 บาท / คน');
   await expect(page.locator('.ck-day')).toHaveCount(2);
   await expect(page.locator('.ck-day__slots > li')).toHaveCount(6);
   await expect(page.locator('.ck-slot--note')).toHaveCount(3);
-  await expect(page.locator('#ckSaveNote')).toHaveText('ยังไม่มีแผนที่บันทึก — กดบันทึกเพื่อเก็บไว้');
+  await expect(page.locator('#ckSaveNote')).toHaveText('ยังไม่ได้บันทึกแผนไว้ — กดบันทึกเมื่อพร้อม');
 
   await page.locator('#ckSavePlan').click();
   await expect(page.locator('#ckPlanMessage')).toContainText('บันทึกแผนนี้แล้ว');
-  await expect(page.locator('#ckSaveNote')).toHaveText('บันทึกแล้ว · แผนนี้จะอยู่ต่อหลังรีเฟรช');
+  await expect(page.locator('#ckSaveNote')).toHaveText('บันทึกแล้ว · แผนนี้จะยังอยู่เมื่อคุณกลับมา');
   const stored = await page.evaluate(() =>
     JSON.parse(localStorage.getItem('chiangKhan.demo.v1') ?? 'null')
   );
@@ -158,11 +158,11 @@ test('the planner requires three stops and saves an explicit snapshot', async ({
   await expect(page.locator('input[data-plan-stop][value="coffee"]')).toBeChecked();
   await expect(page.locator('input[data-plan-stop][value="temple"]')).toBeChecked();
   await expect(page.locator('#ckSummaryTotal')).toHaveText('630 บาท / คน');
-  await expect(page.locator('#ckSaveNote')).toHaveText('บันทึกแล้ว · แผนนี้จะอยู่ต่อหลังรีเฟรช');
+  await expect(page.locator('#ckSaveNote')).toHaveText('บันทึกแล้ว · แผนนี้จะยังอยู่เมื่อคุณกลับมา');
 
   await planChip(page, 'kaeng').click();
   await expect(page.locator('#ckPlanCount')).toHaveText('4/5');
-  await expect(page.locator('#ckSaveNote')).toHaveText('มีการเปลี่ยนแปลงที่ยังไม่บันทึก');
+  await expect(page.locator('#ckSaveNote')).toHaveText('มีการแก้ไขที่ยังไม่ได้บันทึก');
   await page.reload({ waitUntil: 'networkidle' });
   await expect(page.locator('#ckPlanCount')).toHaveText('3/5');
   await expect(page.locator('input[data-plan-stop][value="kaeng"]')).not.toBeChecked();
@@ -233,15 +233,24 @@ test('print media keeps the completed passport and hides site chrome', async ({ 
   await expect(page.locator('.ck-passport__empty-note')).toBeHidden();
 });
 
-test('reduced motion stops the ticker and leaves one static line', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'reduce' });
+test('the ticker is a single centered static line', async ({ page }) => {
   await openFresh(page);
-  const ticker = await page.locator('.ck-ticker__track').evaluate((element) => ({
-    animation: getComputedStyle(element).animationName,
-    display: getComputedStyle(element).display
-  }));
+  await expect(page.locator('.ck-ticker__track > span')).toHaveCount(1);
+  const ticker = await page.locator('.ck-ticker__track').evaluate((element) => {
+    const span = element.querySelector('span');
+    return {
+      animation: getComputedStyle(element).animationName,
+      justifyContent: getComputedStyle(element).justifyContent,
+      whiteSpace: span ? getComputedStyle(span).whiteSpace : '',
+      textAlign: span ? getComputedStyle(span).textAlign : '',
+      text: span?.textContent?.trim() ?? ''
+    };
+  });
   expect(ticker.animation).toBe('none');
-  await expect(page.locator('.ck-ticker__track > span').nth(1)).toBeHidden();
+  expect(ticker.justifyContent).toBe('center');
+  expect(ticker.whiteSpace).toBe('normal');
+  expect(ticker.textAlign).toBe('center');
+  expect(ticker.text.endsWith('·')).toBe(false);
 });
 
 test('the skip link lands below the sticky header', async ({ page }) => {
