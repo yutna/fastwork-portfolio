@@ -455,22 +455,37 @@ export const setPlanStop = (state, id, selected, content) => {
 };
 
 /**
+ * Turn one draw from a random source into an index in `[0, limit)`.
+ * Values outside the documented `[0, 1)` range are clamped so a bad source
+ * cannot drop a stop from the shuffle.
+ *
+ * @param {() => number} random
+ * @param {number} limit
+ * @returns {number}
+ */
+const randomIndex = (random, limit) => {
+  const value = random();
+  const index = Number.isFinite(value) ? Math.floor(value * limit) : 0;
+  return Math.min(limit - 1, Math.max(0, index));
+};
+
+/**
  * Build a plan from a deterministic random source. The shell passes
  * `Math.random`; tests pass a sequence so the result is reproducible.
  *
  * @param {AppState} state
- * @param {() => number} random A source of numbers in [0, 1).
+ * @param {() => number} random A source of numbers; values outside [0, 1) are clamped.
  * @param {Content} content
  * @returns {AppState}
  */
 export const selectRandomPlan = (state, random, content) => {
   const count = Math.min(
     content.stops.length,
-    MIN_PLAN_STOPS + Math.min(2, Math.max(0, Math.floor(random() * 3)))
+    MIN_PLAN_STOPS + randomIndex(random, 3)
   );
   const pool = content.stops.map((stop) => stop.id);
   for (let index = pool.length - 1; index > 0; index -= 1) {
-    const swap = Math.floor(random() * (index + 1));
+    const swap = randomIndex(random, index + 1);
     [pool[index], pool[swap]] = [pool[swap], pool[index]];
   }
   return Object.freeze({

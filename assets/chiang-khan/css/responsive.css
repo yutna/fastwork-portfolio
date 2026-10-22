@@ -1,3 +1,10 @@
+@media (max-width: 560px) {
+  .portfolio-return {
+    right: max(14px, env(safe-area-inset-right));
+    left: auto;
+  }
+}
+
 @media (max-width: 480px) {
   .ck-brand__tag {
     display: none;
