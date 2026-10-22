@@ -4,47 +4,70 @@
 [![pages](https://github.com/yutna/fastwork-portfolio/actions/workflows/pages.yml/badge.svg)](https://github.com/yutna/fastwork-portfolio/actions/workflows/pages.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Selected web work by Yutthana, built with Jekyll and GitHub Pages:
-<https://yutna.github.io/fastwork-portfolio/>.
+Selected web work by **Yutthana Siphuengchai** — a small, hand-built
+portfolio for GitHub Pages.
 
-## What's here
+**Live site:** <https://yutna.github.io/fastwork-portfolio/>
 
-- `/` — an editorial project index with its own paper/ink/cobalt identity.
-- `/krua-tumya/` — a Jekyll port of the ครัวตำย่าปากซอย demo: its original
-  markup, palette, fonts, copy, and interactions, plus a floating
-  `← Portfolio` link.
+## What this is
+
+A public portfolio for selected front-end and design work. It pairs an
+editorial project index with a preserved restaurant demo, built as a
+Jekyll project site and deployed with GitHub Actions.
+
+## Who it's for
+
+- **Clients and collaborators** — see the live site and the ครัวตำย่า demo.
+- **Developers** — read the source, run it locally, or reuse the structure
+  for another small Jekyll project.
+
+## What's inside
+
+- `/` — an editorial project index with its own paper, ink, and cobalt
+  identity.
+- `/krua-tumya/` — a Jekyll port of the ครัวตำย่าปากซอย restaurant demo,
+  with its original markup, palette, fonts, copy, and interactions, plus a
+  floating return link to the index.
 - `/404.html` — a matching not-found page.
-- `robots.txt` and `noindex` metadata — best-effort search and AI-crawler
-  exclusion. GitHub Pages is public, so this cannot be guaranteed.
+- `robots.txt` and `noindex` metadata — best-effort exclusion from search
+  and AI crawlers. GitHub Pages is public, so this cannot be guaranteed.
 
-The project page is intentionally not a case study this round. It is the
-working demo with one way back to the index.
-
-## Stack
+## Built with
 
 - Ruby 4.0.7, Bundler, Jekyll 4.4.1, WEBrick
 - Node.js 24.22.1, plain ESM with JSDoc types checked by TypeScript
-- Playwright, axe-core, html-validate, and a small Node production checker
-- GitHub Actions for CI and Pages deployment; mise pins the local toolchain
+- Playwright, axe-core, html-validate, and a Node static-site checker
+- GitHub Actions for CI and Pages; mise pins the local toolchain
 
-The site uses `baseurl: /fastwork-portfolio`; every internal URL goes through
-Liquid's `relative_url` so the same build works locally and on the project
-Pages URL.
+The site uses `baseurl: /fastwork-portfolio`. Internal links and assets go
+through Liquid's `relative_url`, so the same build works at the project
+Pages URL and in local preview.
 
-## Local development
+## Run locally
+
+The pinned toolchain is managed by [mise](https://mise.jdx.dev/). Install
+Ruby, Node, and the project dependencies once:
 
 ```bash
 mise install
 mise exec -- bundle install
 mise exec -- npm ci
+```
+
+Build and preview the site at its production base path:
+
+```bash
 mise exec -- bundle exec jekyll build
 mise exec -- npm run preview
 ```
 
-Then open <http://127.0.0.1:4001/fastwork-portfolio/>. `npm run preview`
-serves the built `_site/` at the production base path; it does not watch or
-rebuild. Use `mise exec -- bundle exec jekyll serve --host 127.0.0.1 --port 4001`
-if you want live rebuilds.
+Open <http://127.0.0.1:4001/fastwork-portfolio/>. `preview` serves the
+built `_site/` directory and does not watch for changes. For live
+rebuilds, use:
+
+```bash
+mise exec -- bundle exec jekyll serve --host 127.0.0.1 --port 4001
+```
 
 ## Checks
 
@@ -52,34 +75,61 @@ if you want live rebuilds.
 mise exec -- npm run test:all
 ```
 
-This builds the site, typechecks every JavaScript file, validates the generated
-HTML, checks internal links/assets and the noindex controls, runs the unit
-tests, then runs Playwright at 1440×1000 and 390×844. The browser suite also
-covers the project interactions, localStorage persistence, horizontal overflow,
-and WCAG A/AA with axe.
+This builds the site, typechecks every JavaScript file, validates the
+generated HTML, checks internal links and assets plus the noindex
+controls, runs the unit tests, then runs Playwright at 1440×1000 and
+390×844. The browser suite covers the project interactions, localStorage
+persistence, horizontal overflow, and WCAG A/AA with axe.
 
-`npm run capture` saves full-page and viewport screenshots for visual review
-under `artifacts/screenshots/`. `npm run check:html` can be run separately after
-a build.
+Individual checks:
 
-### Known accessibility constraint
+```bash
+mise exec -- npm run lint:js
+mise exec -- npm run check:static   # after a build
+mise exec -- npm run check:html     # after a build
+mise exec -- npm run test:unit
+mise exec -- npm run test:e2e
+```
 
-The original ครัวตำย่า palette puts six small labels at 4.42:1 against their
-backgrounds; WCAG AA asks for 4.5:1. Those selectors are documented and allowed
-by the accessibility test. The rest of the page is checked normally. Changing
-the demo palette would break the “exact demo” requirement.
+`mise exec -- npm run capture` saves full-page and viewport screenshots
+under `artifacts/screenshots/` for visual review.
 
-## Design rules
+## Repository layout
 
-The repository vendors `functional-design-skills` 3.3.0 under
-`vendor/functional-design-skills/` and exposes a small OpenCode bridge at
-`.opencode/skills/functional-design/`. See `AGENTS.md` for the project rules,
-commands, and the design-rule precedence.
+```text
+.
+├── index.html, 404.html        # home and not-found pages
+├── krua-tumya/                 # preserved restaurant demo
+├── _layouts/, _includes/       # Jekyll templates
+├── _data/projects.yml          # project index data
+├── assets/css/                 # home styles
+├── assets/krua-tumya/          # demo assets and JavaScript
+├── scripts/                    # preview, screenshots, and static checks
+├── tests/                      # unit tests and Playwright specs
+└── .github/workflows/          # CI, Pages, and release automation
+```
+
+## Notes
+
+- No analytics, trackers, cookies, or third-party runtime dependencies.
+  Google Fonts on the demo page are part of the original design.
+- Search indexing is intentionally disabled with `robots.txt` and
+  `noindex` metadata. This is best-effort on GitHub Pages.
+- Accessibility is tested with axe. The preserved demo has one documented
+  palette exception; see
+  [CONTRIBUTING.md](CONTRIBUTING.md#accessibility).
+- All JavaScript — browser runtime, Node scripts, tests, and Playwright
+  config — follows the vendored `functional-design-skills` pack. See
+  [AGENTS.md](AGENTS.md) for the scope and rules.
 
 ## Contributing
 
-Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
+Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) for the
+issue-first workflow and local checks. By participating, you agree to the
+[Code of Conduct](CODE_OF_CONDUCT.md). Report security issues privately
+through [SECURITY.md](SECURITY.md), never in a public issue. General
+support is covered in [SUPPORT.md](SUPPORT.md).
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) © 2026 Yutthana Siphuengchai

@@ -16,9 +16,9 @@ process is small and the same for every change.
    `docs`, `chore`, `refactor`, `test`, `ci`, `build`, `perf`, `style`,
    `revert`. The scope is optional and lower-case; `!` marks a breaking change.
    The title becomes the commit on `main`.
-5. **Link the issue** with `Closes #N` in the description. The pull request
-   takes the issue's milestone, and it can only be merged while it is in a
-   version milestone (`vX.Y.Z`).
+5. **Link the issue** with `Closes #N` in the description. Set the pull
+   request milestone to the issue's milestone; it can only be merged while
+   it is in a version milestone (`vX.Y.Z`).
 6. **CI must pass**: the `ci-ok` and `pr-check / check` checks.
 7. **Squash merge only.** The branch is deleted after the merge.
 
@@ -37,14 +37,29 @@ mise exec -- npm run test:all
 mise exec -- npm run preview
 ```
 
-The preview runs at <http://127.0.0.1:4001/fastwork-portfolio/>. The project
-page is a preserved demo: do not redesign it or change its palette, fonts,
-copy, or behaviour. The only visual addition is the floating Portfolio link.
+The preview runs at <http://127.0.0.1:4001/fastwork-portfolio/>.
 
-All JavaScript in the repository — browser code, Node scripts, tests, and
-`playwright.config.mjs` — is plain ESM with JSDoc types checked by `tsc`.
-Every tracked JavaScript file follows `functional-design-skills`: read
-`AGENTS.md` and the vendored pack before changing it. Calibration decides
-how much design each file needs; config and tooling usually take the
-lightest row. Jekyll templates, HTML, CSS, docs, and CI are outside FDS
-scope.
+## Project page
+
+`/krua-tumya/` is a preserved port of the original demo. Do not redesign
+it or change its palette, fonts, copy, or behaviour. The floating
+`← Portfolio` link is the only visual addition. The `role="group"`
+correction on `.hero-proof` is intentional and non-visual.
+
+## Accessibility
+
+The original palette puts six small labels at 4.42:1 against their
+backgrounds, below the 4.5:1 WCAG AA threshold. The accessibility test
+(`tests/e2e/a11y.spec.mjs`) documents and allows only those selectors.
+Any new contrast issue fails the suite. Do not change the demo palette to
+silence the exception.
+
+## JavaScript
+
+All JavaScript in the repository — browser code, Node scripts, tests,
+and `playwright.config.mjs` — is plain ESM with JSDoc types checked by
+`tsc`. Every tracked JavaScript file follows `functional-design-skills`:
+read `AGENTS.md` and the vendored pack before changing it. Calibration
+decides how much design each file needs; config and tooling usually take
+the lightest row. Jekyll templates, HTML, CSS, docs, and CI are outside
+FDS scope.
