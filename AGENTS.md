@@ -13,6 +13,10 @@ In scope:
 - `tests/**/*.{js,mjs}`
 - `playwright.config.mjs`
 
+All in-scope files use plain ESM with JSDoc types checked by `tsc`
+(`checkJs`, `strict`). Browser code also follows
+`assets/krua-tumya/js/AGENTS.md`.
+
 For every in-scope change:
 
 - Read the `functional-design` skill index and name the calibration row.
@@ -55,25 +59,62 @@ GitHub Pages project site at <https://yutna.github.io/fastwork-portfolio/>.
 - No analytics, trackers, cookies, or third-party runtime dependencies.
   Google Fonts on the project page are part of the original demo.
 
-## JavaScript
+## Context map
 
-- All tracked JavaScript follows FDS. The areas are browser runtime,
-  Node scripts, tests, and Playwright config. The runtime module rules
-  live in `assets/krua-tumya/js/AGENTS.md`; read that file before
-  changing browser code.
-- Plain ESM with JSDoc types checked by `tsc` (`checkJs`, `strict`).
-- Keep pure rules in `assets/krua-tumya/js/core.mjs`. DOM, storage,
-  timers, and animation belong in `shell.mjs`; lookups belong in
-  `dom.mjs`. `main.mjs` only starts the shell.
-- State transitions return a new frozen state. Do not mutate arguments
-  or module-level shared data.
-- Expected failures are values, not exceptions. Programmer errors may
-  throw. Use the existing `Result` shape.
-- Node scripts use `node:` built-ins and the dev dependencies already in
-  `package.json`. Tests use `node:test` and Playwright.
-- `playwright.config.mjs` is configuration; give it the lightest
-  calibration row and do not add wrapper types.
-- No framework and no build step for browser code.
+| Path | Why it matters |
+| --- | --- |
+| `assets/krua-tumya/js/` | Browser runtime; read its `AGENTS.md` first |
+| `scripts/` | Node checks, screenshots, and preview server; use `node:` built-ins |
+| `tests/` | Unit tests and Playwright specs; assert behaviour, not implementation |
+| `playwright.config.mjs` | E2E config; use the lightest FDS row |
+| `_config.yml`, `_layouts/`, `_includes/`, `index.html`, `krua-tumya/`, `404.html` | Jekyll pages and shared markup |
+| `assets/css/` | Home and preserved demo styles |
+| `.github/workflows/` | CI, PR checks, Pages, and release |
+| `README.md`, `CONTRIBUTING.md` | Public overview and contributor workflow |
+
+## Workflow
+
+1. Read the issue, then restate the goal and acceptance criteria. Stop
+   and ask if they are undecided.
+2. Search before reading. Use `rg` and globs, then read only the
+   relevant files and line ranges.
+3. Decide whether FDS applies, and plan the files, data or signature
+   changes, tests, risks, and verification. Use `/plan-change` for a
+   plan-only pass.
+4. Implement the smallest complete change. Keep unrelated files alone.
+5. Run targeted checks while iterating. Read the failure, fix the
+   cause, and rerun the smallest check that proves it.
+6. Run the full quality gate, review the diff, run the FDS review for
+   JavaScript, and report the changed files, verification, and blockers.
+
+Fewer revision loops come from better inspection, not from skipping
+verification. Do not stop after one edit while a check is failing.
+
+## Quality gate
+
+Aim for a correct first implementation: inspect enough that avoidable
+mistakes do not happen. If a check or review finds a problem, fix it and
+rerun until the gate is green.
+
+### Definition of done
+
+- [ ] The issue is linked from the pull request.
+- [ ] Acceptance criteria are met and checked off.
+- [ ] `mise exec -- npm run test:all` passes.
+- [ ] JavaScript changes used the FDS pass and review.
+- [ ] Docs and templates match the behaviour.
+- [ ] The diff is scoped, reviewed, and free of secrets.
+
+## Token discipline
+
+- Search first; read targeted ranges instead of whole files.
+- Do not re-read a file after editing; use `git diff`.
+- Batch related edits. Run targeted checks between batches, not after
+  every line.
+- Load only the skills the task needs. Non-JavaScript work does not
+  need FDS.
+- Keep reports to changed files, verification, and blockers.
+- Never trade correctness for fewer tokens or a faster-looking result.
 
 ## Commands
 
@@ -81,6 +122,9 @@ Use the pinned toolchain through mise:
 
 ```bash
 mise exec -- bundle exec jekyll build   # writes _site/
+mise exec -- npm run lint:js            # tsc --noEmit
+mise exec -- npm run test:unit          # node:test
+mise exec -- npm run test:e2e -- tests/e2e/project.spec.mjs
 mise exec -- npm test                   # typecheck, static/HTML/link checks, unit + e2e
 mise exec -- npm run test:all           # build first, then the full suite
 mise exec -- npm run preview            # serve _site at the production base path
@@ -92,11 +136,12 @@ suite runs at 1440×1000 and 390×844, checks the project's behaviour and
 local persistence, audits WCAG A/AA with axe, and verifies the noindex
 and internal-link checks.
 
-## Workflow
+## Git workflow
 
 Follow the oss-kit workflow in `CONTRIBUTING.md`: issue first, branch as
 `<type>/<issue>-<slug>`, draft PR, Conventional Commits title, milestone,
-and squash merge. Do not publish a Fastwork profile from this repository.
+and squash merge. Keep the PR in draft until the quality gate is green.
+Do not publish a Fastwork profile from this repository.
 
 ## Known constraint
 
