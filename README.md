@@ -11,10 +11,9 @@ portfolio for GitHub Pages.
 
 ## What this is
 
-A public portfolio for selected front-end and design work. It pairs an
-editorial project index with one interactive demo — a preserved
-restaurant site — built as a Jekyll project site and deployed with
-GitHub Actions.
+A public portfolio for selected front-end work. It pairs a monochrome
+front-end ledger with one interactive demo — a preserved restaurant
+site — built as a Jekyll project site and deployed with GitHub Actions.
 
 ## Who it's for
 
@@ -25,8 +24,8 @@ GitHub Actions.
 
 ## What's inside
 
-- `/` — an editorial project index with its own paper, ink, and cobalt
-  identity.
+- `/` — a monochrome front-end ledger with a single project, a
+  capability index, and working notes.
 - `/krua-tumya/` — a Jekyll port of the ครัวตำย่าปากซอย restaurant demo,
   with its original markup, palette, fonts, copy, and interactions, plus a
   floating return link to the index.
@@ -102,10 +101,12 @@ under `artifacts/screenshots/` for visual review.
 ```text
 .
 ├── index.html, 404.html        # home and not-found pages
+├── PRODUCT.md, DESIGN.md       # product context and design system
 ├── krua-tumya/                 # preserved restaurant demo
 ├── _layouts/, _includes/       # Jekyll templates
 ├── _data/projects.yml          # project index data
 ├── assets/css/                 # home styles
+├── assets/fonts/               # self-hosted Schibsted Grotesk (OFL)
 ├── assets/krua-tumya/          # preserved demo assets and JavaScript
 ├── scripts/                    # preview, screenshots, and static checks
 ├── tests/                      # unit tests and Playwright specs
