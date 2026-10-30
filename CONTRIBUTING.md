@@ -46,20 +46,17 @@ it or change its palette, fonts, copy, or behaviour. The floating
 `← Portfolio` link is the only visual addition. The `role="group"`
 correction on `.hero-proof` is intentional and non-visual.
 
-`/chiang-khan/` is a designed campaign demo. Its copy, stops, notes, and
-sample budget come from `_data/chiang-khan.yml`; keep that file as the
-single content source. Times, prices, and travel routes are examples, not
-a booking promise. The six-colour palette, self-hosted OFL fonts, and
-line-drawn illustrations are part of the design.
+Four Thai copy corrections are approved and intentional: `แล้วค่อยไปรับคิวที่หน้าร้าน`,
+`ชื่อ “ครัวตำย่า” เริ่มติดปาก`, `ร้านหัวมุม ตลาดสด ...`, and
+`ที่อยู่สมมติ ใช้บอกทางในเดโม`. Do not change other copy.
 
 ## Accessibility
 
 The original palette puts six small labels at 4.42:1 against their
 backgrounds, below the 4.5:1 WCAG AA threshold. The accessibility test
 (`tests/e2e/a11y.spec.mjs`) documents and allows only those selectors on
-the preserved page. The Chiang Khan page has no exceptions. Any new
-contrast issue fails the suite. Do not change the preserved demo palette
-to silence the exception.
+the preserved page. Any new contrast issue fails the suite. Do not change
+the preserved demo palette to silence the exception.
 
 ## JavaScript
 

@@ -34,7 +34,7 @@ const consoleErrors = (page) => {
   return errors;
 };
 
-test('home presents both selected projects', async ({ page }) => {
+test('home presents the selected project', async ({ page }) => {
   const errors = consoleErrors(page);
   await page.goto('./');
   await settle(page);
@@ -45,26 +45,19 @@ test('home presents both selected projects', async ({ page }) => {
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
   await expect(page.locator('meta[name="googlebot"]')).toHaveAttribute('content', /noindex/);
   await expect(page.getByRole('heading', { name: 'Selected projects' })).toBeVisible();
-  await expect(page.locator('.section-count')).toHaveText('02');
-  await expect(page.locator('.project')).toHaveCount(2);
+  await expect(page.locator('.section-count')).toHaveText('01');
+  await expect(page.locator('.project')).toHaveCount(1);
 
   const covers = page.locator('.project-cover img');
-  await expect(covers).toHaveCount(2);
+  await expect(covers).toHaveCount(1);
   await expect(covers.nth(0)).toHaveAttribute('loading', 'eager');
   await expect(covers.nth(0)).toHaveAttribute('fetchpriority', 'high');
   await expect(covers.nth(0)).toHaveAttribute('alt', /ครัวตำย่า/);
-  await expect(covers.nth(1)).toHaveAttribute('loading', 'lazy');
-  await expect(covers.nth(1)).toHaveAttribute('fetchpriority', 'low');
-  await expect(covers.nth(1)).toHaveAttribute('alt', /Chiang Khan/);
-
-  await covers.nth(1).scrollIntoViewIfNeeded();
-  await expect(covers.nth(1)).toHaveJSProperty('complete', true);
   await expect(covers.nth(0)).toHaveJSProperty('complete', true);
 
   const demoLinks = page.getByRole('link', { name: /View the live demo/i });
-  await expect(demoLinks).toHaveCount(2);
+  await expect(demoLinks).toHaveCount(1);
   await expect(demoLinks.nth(0)).toHaveAttribute('href', '/fastwork-portfolio/krua-tumya/');
-  await expect(demoLinks.nth(1)).toHaveAttribute('href', '/fastwork-portfolio/chiang-khan/');
   await expect(page.getByRole('link', { name: /Fastwork/i }).first()).toHaveAttribute(
     'href',
     'https://fastwork.com/user/yutna'
@@ -81,20 +74,11 @@ test('home has no horizontal overflow at the active viewport', async ({ page }) 
   expect(overflow).toBeLessThanOrEqual(1);
 });
 
-test('the first home link reaches the ครัวตำย่า project', async ({ page }) => {
+test('the home link reaches the ครัวตำย่า project', async ({ page }) => {
   await page.goto('./');
   await settle(page);
   await page.getByRole('link', { name: /View the live demo/i }).first().click();
   await expect(page).toHaveURL(/\/fastwork-portfolio\/krua-tumya\/$/);
   await expect(page.locator('h1')).toContainText('ตำให้');
-  await expect(page.locator('.portfolio-return')).toBeVisible();
-});
-
-test('the second home link reaches the Chiang Khan project', async ({ page }) => {
-  await page.goto('./');
-  await settle(page);
-  await page.getByRole('link', { name: /View the live demo/i }).nth(1).click();
-  await expect(page).toHaveURL(/\/fastwork-portfolio\/chiang-khan\/$/);
-  await expect(page.locator('h1')).toContainText('ตื่นเช้า');
   await expect(page.locator('.portfolio-return')).toBeVisible();
 });
