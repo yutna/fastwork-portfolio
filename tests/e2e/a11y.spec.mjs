@@ -61,34 +61,3 @@ test('the project page keeps only the demo palette contrast exceptions', async (
   const otherSerious = serious.filter((violation) => violation.id !== 'color-contrast');
   expect(otherSerious, JSON.stringify(otherSerious, null, 2)).toEqual([]);
 });
-
-test('the Chiang Khan page has no WCAG A/AA exceptions', async ({ page }) => {
-  const results = await analyze(page, 'chiang-khan/');
-  expect(seriousViolations(results.violations), JSON.stringify(results.violations, null, 2)).toEqual([]);
-});
-
-test('the completed Chiang Khan passport and a selected plan have no WCAG A/AA exceptions', async ({ page }) => {
-  await page.goto('chiang-khan/');
-  await settle(page);
-  for (const id of ['alms', 'street', 'coffee', 'temple', 'kaeng']) {
-    await page.locator(`[data-stamp="${id}"]`).click();
-  }
-  await expect(page.locator('#ckPassportComplete')).toBeVisible();
-  await expect
-    .poll(async () =>
-      page
-        .locator('.ck-stamp--passport')
-        .evaluateAll((elements) => elements.every((element) => getComputedStyle(element).opacity === '1'))
-    )
-    .toBe(true);
-
-  for (const id of ['alms', 'coffee', 'temple']) {
-    await page.locator(`[data-plan-chip="${id}"]`).click();
-  }
-  await expect(page.locator('#ckSummary')).toBeVisible();
-  // Let the stamp and chip colour transitions settle before auditing.
-  await page.waitForTimeout(400);
-
-  const results = await analyzeCurrent(page);
-  expect(seriousViolations(results.violations), JSON.stringify(results.violations, null, 2)).toEqual([]);
-});

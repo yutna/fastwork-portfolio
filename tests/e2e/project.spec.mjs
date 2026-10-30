@@ -46,6 +46,15 @@ test('the project is the demo plus a portfolio return link', async ({ page }) =>
   expect(errors).toEqual([]);
 });
 
+test('the approved Thai copy corrections stay in place', async ({ page }) => {
+  await openFresh(page);
+
+  await expect(page.locator('#build .section-deck')).toContainText('ไปรับคิวที่หน้าร้าน');
+  await expect(page.locator('.timeline-card').filter({ hasText: 'เริ่มติดปาก' })).toHaveCount(1);
+  await expect(page.locator('.visit-address')).toContainText('ร้านหัวมุม ตลาดสด');
+  await expect(page.locator('.tiny-note')).toHaveText('ที่อยู่สมมติ ใช้บอกทางในเดโม');
+});
+
 test('the heat meter, chili stepper, and standard preset stay in sync', async ({ page }) => {
   await openFresh(page);
 

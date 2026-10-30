@@ -95,8 +95,7 @@ try {
 
     for (const [pageName, path] of [
       ['home', ''],
-      ['krua-tumya', 'krua-tumya/'],
-      ['chiang-khan', 'chiang-khan/']
+      ['krua-tumya', 'krua-tumya/']
     ]) {
       await page.goto(`${BASE}/${path}`, { waitUntil: 'networkidle' });
       await settle(page);

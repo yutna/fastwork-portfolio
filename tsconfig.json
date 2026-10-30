@@ -14,7 +14,6 @@
   },
   "include": [
     "assets/krua-tumya/js/**/*.mjs",
-    "assets/chiang-khan/js/**/*.mjs",
     "scripts/**/*.mjs",
     "tests/**/*.mjs",
     "playwright.config.mjs"
