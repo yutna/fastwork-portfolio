@@ -12,7 +12,7 @@ Jekyll 4 on GitHub Pages, with plain HTML, CSS, and ESM JavaScript.
 
 ## Users
 
-People arriving from Yutthana's Fastwork profile: Thai and international SMB owners, founders, and teams evaluating a freelance front-end developer. They have already seen the profile bio and the Krua Tumya project post, and they often skim on mobile.
+People arriving from Yutthana's Fastwork profile: Thai and international SMB owners, founders, and teams evaluating a freelance web developer. They have already seen the profile bio and the Krua Tumya project post, and they often skim on mobile.
 
 ## Product Purpose
 
@@ -20,7 +20,7 @@ A one-project portfolio that shows how Yutthana builds for the web and gives the
 
 ## Positioning
 
-Yutthana is a front-end developer who works on complex web apps, performance, accessibility, and maintainable code. The portfolio proves this through one project, a short capability index, and working notes — not through design-role language.
+Yutthana is a web developer who works on complex web apps, performance, accessibility, and maintainable code. The portfolio proves this through one project, a short capability index, and working notes — not through design-role language.
 
 ## Operating Context
 

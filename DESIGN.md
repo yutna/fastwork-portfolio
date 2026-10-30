@@ -1,6 +1,6 @@
 ---
 name: Yutthana Portfolio
-description: A monochrome front-end developer ledger with one project and quiet engineering notes.
+description: A monochrome web developer ledger with one project and quiet engineering notes.
 colors:
   paper: "#FFFFFF"
   ink: "#0A0A0A"
@@ -61,7 +61,7 @@ components:
 
 **Creative North Star: "The Ledger"**
 
-The homepage is a single narrow column of evidence. It reads like a well-kept engineering ledger: a masthead, one strong statement, an index of capabilities, the project, working notes, and a direct contact line. There is no rail, no card grid, and no color accent. The project screenshots carry the only color on the page.
+The homepage is a single narrow column of evidence. It reads like a well-kept engineering ledger: a masthead, one strong statement, an index of capabilities, the project, open-source work, working notes, and a direct contact line. There is no rail, no card grid, and no color accent. The project screenshots carry the only color on the page.
 
 The page is intentionally quiet. Hierarchy comes from type size, weight, and thin rules. The interface should never compete with the work or the writing.
 
@@ -118,7 +118,7 @@ The palette is monochrome. There is no accent color and no green.
 
 ## Layout
 
-A single 760px column centered on the page, with 24px side gutters on small screens. The masthead uses a name/role line on the left and location on the right, then a navigation/status row. Sections are separated by 58–72px. Capability rows and working notes use a 210px label column and a flexible text column. The project uses a full-width cover, a three-column spec row, and a 240px mobile screenshot beside a wider heat-meter image. At 700px the label columns collapse, the spec becomes one column, and the gallery stacks.
+A single 760px column centered on the page, with 24px side gutters on small screens. The masthead uses a name/role line on the left and location on the right, then a navigation/status row. Sections are separated by 58–72px. Capability rows, open-source rows, and working notes use a 210px label column and a flexible text column. The project uses a scrollable full-page preview, a three-column spec row, and a 240px mobile screenshot beside a wider heat-meter image. At 700px the label columns collapse, the spec becomes one column, the preview shortens to 460px, and the gallery stacks.
 
 ## Elevation & Depth
 
@@ -152,7 +152,7 @@ Buttons use a 6px radius. Images use a 1px border and no radius. There are no ca
 
 ### Project
 
-- **Cover:** full-width image with a 1px line border.
+- **Full-page preview:** a 620px scroll frame (460px on mobile) with a 1px line border, a "Full page preview" bar, and a visible caption that tells the visitor to scroll inside.
 - **Spec:** three columns for Role, Stack, and Features, separated by top and bottom rules.
 - **Gallery:** 240px mobile screenshot + wider heat-meter image; captions below.
 
@@ -161,8 +161,9 @@ Buttons use a 6px radius. Images use a 1px border and no radius. There are no ca
 - Do keep one 760px column and a lot of white space.
 - Do use Schibsted Grotesk for every text role.
 - Do keep the interface monochrome; the work supplies color.
-- Do describe the work in front-end terms.
+- Do describe the work in web development terms.
 - Do keep the 1px rules and flat surfaces.
+- Do show the project as a scrollable full-page preview, not a cropped strip.
 - Don't add a face mark, accent color, cards, shadows, gradients, or a mono label font.
 - Don't use design, designer, UX, or UI-role language in the interface.
 - Don't add numbered section markers or arrows to every link.

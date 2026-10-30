@@ -128,6 +128,7 @@ img {
 .intro,
 .capabilities,
 .work,
+.open-source,
 .notes,
 .about,
 .contact,
@@ -292,6 +293,7 @@ img {
 }
 
 .capabilities h2,
+.open-source h2,
 .notes h2,
 .about h2 {
     margin-bottom: 12px;
@@ -353,10 +355,45 @@ img {
     font-size: .78rem;
 }
 
-.work__cover img {
+.work__preview {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--paper);
+}
+
+.preview__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    font-size: .72rem;
+}
+
+.preview__scroll {
+    max-height: 620px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-color: var(--muted) var(--paper);
+}
+
+.preview__scroll:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: -2px;
+}
+
+.preview__scroll img {
     display: block;
     width: 100%;
-    border: 1px solid var(--line);
+}
+
+.work__preview figcaption {
+    padding: 8px 12px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: .75rem;
 }
 
 .work__summary {
@@ -366,6 +403,25 @@ img {
     font-size: 1rem;
     line-height: 1.62;
     text-wrap: pretty;
+}
+
+.work__intent {
+    max-width: 58ch;
+    margin-top: 9px;
+    color: var(--muted);
+    font-size: .9rem;
+    line-height: 1.55;
+    text-wrap: pretty;
+}
+
+.inline-link {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.inline-link:hover {
+    color: var(--muted);
 }
 
 .work__spec {
@@ -416,6 +472,12 @@ img {
     margin-top: 7px;
     color: var(--muted);
     font-size: .75rem;
+}
+
+/* ---------- open source ---------- */
+
+.open-source {
+    margin-top: 66px;
 }
 
 /* ---------- working notes ---------- */
@@ -606,6 +668,7 @@ img {
 
     .capabilities,
     .work,
+    .open-source,
     .notes,
     .about {
         margin-top: 48px;
@@ -638,6 +701,10 @@ img {
 
     .work__gallery {
         grid-template-columns: minmax(0, 1fr);
+    }
+
+    .preview__scroll {
+        max-height: 460px;
     }
 
     .work__gallery figure:first-child img {

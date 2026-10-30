@@ -11,8 +11,8 @@ portfolio for GitHub Pages.
 
 ## What this is
 
-A public portfolio for selected front-end work. It pairs a monochrome
-front-end ledger with one interactive demo — a preserved restaurant
+A public portfolio for selected web development work. It pairs a monochrome
+web developer ledger with one interactive demo — a preserved restaurant
 site — built as a Jekyll project site and deployed with GitHub Actions.
 
 ## Who it's for
@@ -24,8 +24,8 @@ site — built as a Jekyll project site and deployed with GitHub Actions.
 
 ## What's inside
 
-- `/` — a monochrome front-end ledger with a single project, a
-  capability index, and working notes.
+- `/` — a monochrome web developer ledger with a single project,
+  open-source work, a capability index, and working notes.
 - `/krua-tumya/` — a Jekyll port of the ครัวตำย่าปากซอย restaurant demo,
   with its original markup, palette, fonts, copy, and interactions, plus a
   floating return link to the index.

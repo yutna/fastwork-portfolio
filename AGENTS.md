@@ -44,8 +44,8 @@ upstream version changes.
 This is a public portfolio for Yutthana Siphuengchai, deployed as a
 GitHub Pages project site at <https://yutna.github.io/fastwork-portfolio/>.
 
-- Home: a monochrome front-end ledger (`assets/css/home.css`, Schibsted Grotesk,
-  white/black, one project and working notes).
+- Home: a monochrome web developer ledger (`assets/css/home.css`, Schibsted Grotesk,
+  white/black, one project, open-source work, and working notes).
 - `/krua-tumya/`: a Jekyll port of the ครัวตำย่าปากซอย demo. Preserve
   its markup, CSS, palette, fonts, copy, and behaviour. The only visual
   addition is the floating `← Portfolio` link. A non-visual `role="group"`
