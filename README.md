@@ -25,7 +25,7 @@ site — built as a Jekyll project site and deployed with GitHub Actions.
 ## What's inside
 
 - `/` — a monochrome software craftsmanship portfolio with a single project,
-  open-source work, a capability index, and working notes.
+  open-source work, an outcomes index, and working notes.
 - `/krua-tumya/` — a Jekyll port of the ครัวตำย่าปากซอย restaurant demo,
   with its original markup, palette, fonts, copy, and interactions, plus a
   floating return link to the index.

@@ -20,7 +20,7 @@ A one-project portfolio that shows how Yutthana builds for the web and gives the
 
 ## Positioning
 
-Yutthana practises software craftsmanship: complex web apps, performance, accessibility, and maintainable code. The portfolio proves this through one project, a short capability index, and working notes — not through design-role language.
+Yutthana practises software craftsmanship: complex web apps, performance, accessibility, and maintainable code. The portfolio proves this through one project, a short outcomes index, and working notes — not through design-role language.
 
 ## Operating Context
 

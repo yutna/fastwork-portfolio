@@ -61,7 +61,7 @@ components:
 
 **Creative North Star: "The Ledger"**
 
-The homepage is a single narrow column of evidence. It reads like a well-kept engineering ledger: a masthead, one strong statement, an index of capabilities, the project, open-source work, working notes, and a direct contact line. There is no rail, no card grid, and no color accent. The project screenshots carry the only color on the page.
+The homepage is a single narrow column of evidence. It reads like a well-kept engineering ledger: a masthead, one strong statement, an outcomes index, the project, open-source work, working notes, and a direct contact line. There is no rail, no card grid, and no color accent. The project screenshots carry the only color on the page.
 
 The page is intentionally quiet. Hierarchy comes from type size, weight, and thin rules. The interface should never compete with the work or the writing.
 
@@ -107,7 +107,7 @@ The palette is monochrome. There is no accent color; the only green is the avail
 
 - **Display** (500, clamp(3.2rem, 5.6vw, 4.25rem), 0.98): the homepage statement.
 - **Headline** (600, 1.6rem, 1.2): the project title.
-- **Title** (600, 0.9rem, 1.45): capability rows and working notes.
+- **Title** (600, 0.9rem, 1.45): outcome rows and working notes.
 - **Body** (400, 1rem, 1.62): running copy, capped at 68ch.
 - **Label** (400, 0.78rem, 1.45): metadata, captions, availability. Sentence case.
 
@@ -119,7 +119,7 @@ The palette is monochrome. There is no accent color; the only green is the avail
 
 ## Layout
 
-A single 760px column centered on the page, with 24px side gutters on small screens. The masthead uses a name/role line on the left and availability on the right; there is no navigation row. Sections are separated by 58–72px. Capability rows, open-source rows, and working notes use a 210px label column and a flexible text column. Open-source rows carry no rules; each group heading has one rule underneath it, and spacing separates the groups. The project uses one full-width hero screenshot that links to the live site, a short summary, and a three-column spec row. At 700px the label columns collapse and the spec becomes one column.
+A single 760px column centered on the page, with 24px side gutters on small screens. The masthead uses a name/role line on the left and availability on the right; there is no navigation row. Sections are separated by 58–72px. Outcome rows, open-source rows, and working notes use a 210px label column and a flexible text column. Open-source rows carry no rules; each group heading has one rule underneath it, and spacing separates the groups. The project uses one full-width hero screenshot that links to the live site, a short summary, and a three-column spec row. At 700px the label columns collapse and the spec becomes one column.
 
 ## Elevation & Depth
 
