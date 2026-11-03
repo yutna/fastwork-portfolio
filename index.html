@@ -1,12 +1,12 @@
 ---
 layout: home
-title: "Yutthana — Web Developer"
-description: "Web developer in Chiang Mai. I build complex web apps, front-end performance, and the tools and checks that keep a product maintainable."
+title: "Yutthana — Software craftsmanship"
+description: "Software craftsmanship in Chiang Mai. I build complex web apps, performance, and the tools and checks that keep a product maintainable."
 ---
 {% assign project = site.data.projects.first %}
 <section class="intro" aria-labelledby="intro-title">
   <h1 id="intro-title">I build web apps<br>that hold up.</h1>
-  <p class="intro__body">Web developer in Chiang Mai. I work on complex web apps, front-end performance, and the tools and checks that keep a product maintainable.</p>
+  <p class="intro__body">Software craftsmanship in Chiang Mai. I work on complex web apps, performance, and the tools and checks that keep a product maintainable.</p>
   <div class="intro__actions">
     <a class="button" href="{{ project.path | relative_url }}">View the live project</a>
     <a class="text-link" href="https://fastwork.com/user/yutna" target="_blank" rel="noopener noreferrer">Hire me on Fastwork</a>
@@ -41,21 +41,19 @@ description: "Web developer in Chiang Mai. I build complex web apps, front-end p
     <p>Self-initiated web app, 2026</p>
   </div>
 
-  <figure class="work__preview">
-    <div class="preview__bar">
-      <span>Full page preview</span>
-      <span>1440</span>
-    </div>
-    <section class="preview__scroll" tabindex="0" aria-label="Full-page preview of the Krua Tumya website. Scroll to explore.">
+  <figure class="work__shot">
+    <a href="{{ project.path | relative_url }}" aria-label="Open the Krua Tumya live site">
       <img
-        src="{{ project.preview | relative_url }}"
+        src="{{ project.cover | relative_url }}"
+        srcset="{{ project.cover | relative_url }} 1440w, {{ project.cover_2x | relative_url }} 2880w"
+        sizes="(min-width: 820px) 760px, 92vw"
         width="1440"
-        height="7782"
-        alt="{{ project.preview_alt | escape }}"
-        loading="lazy"
+        height="810"
+        alt="{{ project.cover_alt | escape }}"
+        loading="eager"
         decoding="async">
-    </section>
-    <figcaption>Scroll inside the frame to see the full page.</figcaption>
+    </a>
+    <figcaption>Krua Tumya homepage</figcaption>
   </figure>
 
   <p class="work__summary">{{ project.summary }}</p>
@@ -69,29 +67,6 @@ description: "Web developer in Chiang Mai. I build complex web apps, front-end p
 
   <div class="work__actions">
     <a class="button" href="{{ project.path | relative_url }}">Open the live site</a>
-  </div>
-
-  <div class="work__gallery">
-    <figure>
-      <img
-        src="{{ '/assets/images/krua-tumya-mobile.jpg' | relative_url }}"
-        width="780"
-        height="1688"
-        alt="The Krua Tumya restaurant website on a phone."
-        loading="lazy"
-        decoding="async">
-      <figcaption>Mobile, 390</figcaption>
-    </figure>
-    <figure>
-      <img
-        src="{{ '/assets/images/krua-tumya-meter.jpg' | relative_url }}"
-        width="1440"
-        height="1356"
-        alt="The Krua Tumya heat meter, with five spice levels and a handwritten note from the owner."
-        loading="lazy"
-        decoding="async">
-      <figcaption>The heat meter</figcaption>
-    </figure>
   </div>
 </section>
 
@@ -121,16 +96,16 @@ description: "Web developer in Chiang Mai. I build complex web apps, front-end p
   <h2 id="notes-title">How I work</h2>
   <div class="notes__list">
     <div class="note">
-      <h3>Write the rules down.</h3>
-      <p>A clear example beats a long brief. I turn requirements into something a team can test.</p>
+      <h3>One person, end to end.</h3>
+      <p>You work with the person who shapes the system, writes the code, and ships it. There is no handoff chain.</p>
     </div>
     <div class="note">
-      <h3>Make the right thing easy.</h3>
-      <p>Reusable CI, small tools, and clear defaults beat a checklist nobody reads.</p>
+      <h3>Small steps, visible progress.</h3>
+      <p>A running build, short feedback loops, and decisions you can review before they become expensive.</p>
     </div>
     <div class="note">
-      <h3>Keep the evidence.</h3>
-      <p>A claim is only useful if someone can check it later.</p>
+      <h3>Built to be handed over.</h3>
+      <p>Documentation, tests, and a codebase your team can continue without me.</p>
     </div>
   </div>
 </section>
@@ -138,10 +113,10 @@ description: "Web developer in Chiang Mai. I build complex web apps, front-end p
 <section class="about" id="about" aria-labelledby="about-title">
   <h2 id="about-title">About</h2>
   <div class="about__body">
-    <p>I'm Yutthana, a web developer in Chiang Mai. I build complex web apps, and I write the tools, specifications, and checks that keep them maintainable.</p>
+    <p>I'm Yutthana. I practise software craftsmanship in Chiang Mai. I build complex web apps, and I write the tools, specifications, and checks that keep them maintainable.</p>
     <p>My public work includes agent skills for functional and object-oriented code, a Gherkin specification toolkit, and an open software-delivery assurance library.</p>
     <p>I care about code that reads clearly and products that stay out of the way.</p>
-    <p class="about__tools">TypeScript, JavaScript, React, Next.js, Java, Elixir, Jekyll.</p>
+    <p class="about__tools">HTML, CSS, JavaScript, TypeScript, React, Ruby, Ruby on Rails, Elixir, Phoenix, Jekyll.</p>
   </div>
 </section>
 

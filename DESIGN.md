@@ -1,6 +1,6 @@
 ---
 name: Yutthana Portfolio
-description: A monochrome web developer ledger with one project and quiet engineering notes.
+description: A monochrome software craftsmanship portfolio with one project and quiet engineering notes.
 colors:
   paper: "#FFFFFF"
   ink: "#0A0A0A"
@@ -118,7 +118,7 @@ The palette is monochrome. There is no accent color and no green.
 
 ## Layout
 
-A single 760px column centered on the page, with 24px side gutters on small screens. The masthead uses a name/role line on the left and location on the right, then a navigation/status row. Sections are separated by 58–72px. Capability rows, open-source rows, and working notes use a 210px label column and a flexible text column. The project uses a scrollable full-page preview, a three-column spec row, and a 240px mobile screenshot beside a wider heat-meter image. At 700px the label columns collapse, the spec becomes one column, the preview shortens to 460px, and the gallery stacks.
+A single 760px column centered on the page, with 24px side gutters on small screens. The masthead uses a name/role line on the left and availability on the right; there is no navigation row. Sections are separated by 58–72px. Capability rows, open-source rows, and working notes use a 210px label column and a flexible text column. The project uses one full-width hero screenshot that links to the live site, a three-column spec row, and a short note about the build. At 700px the label columns collapse and the spec becomes one column.
 
 ## Elevation & Depth
 
@@ -152,9 +152,8 @@ Buttons use a 6px radius. Images use a 1px border and no radius. There are no ca
 
 ### Project
 
-- **Full-page preview:** a 620px scroll frame (460px on mobile) with a 1px line border, a "Full page preview" bar, and a visible caption that tells the visitor to scroll inside.
+- **Hero screenshot:** one full-width cover image with a 1px line border, linked to the live site, with a short caption.
 - **Spec:** three columns for Role, Stack, and Features, separated by top and bottom rules.
-- **Gallery:** 240px mobile screenshot + wider heat-meter image; captions below.
 
 ## Do's and Don'ts
 
@@ -163,7 +162,7 @@ Buttons use a 6px radius. Images use a 1px border and no radius. There are no ca
 - Do keep the interface monochrome; the work supplies color.
 - Do describe the work in web development terms.
 - Do keep the 1px rules and flat surfaces.
-- Do show the project as a scrollable full-page preview, not a cropped strip.
+- Do show one clear hero screenshot and link it to the live project.
 - Don't add a face mark, accent color, cards, shadows, gradients, or a mono label font.
 - Don't use design, designer, UX, or UI-role language in the interface.
 - Don't add numbered section markers or arrows to every link.

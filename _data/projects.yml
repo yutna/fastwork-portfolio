@@ -13,8 +13,6 @@
   cover: "/assets/images/krua-tumya-cover-1440.jpg"
   cover_2x: "/assets/images/krua-tumya-cover-2880.jpg"
   cover_alt: "The Krua Tumya restaurant homepage, with bold red Thai lettering and a framed illustration of a mortar and spoon."
-  preview: "/assets/images/krua-tumya-full.jpg"
-  preview_alt: "The full Krua Tumya restaurant page, from the homepage through the menu, heat meter, plate builder, story, and visit sections."
   accent: "#D8331F"
   status: "Live demo"
   role: "Web development"

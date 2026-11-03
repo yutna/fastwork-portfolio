@@ -42,19 +42,15 @@ test('home presents the Krua Tumya work and open-source projects', async ({ page
   await expect(page).toHaveTitle(/Yutthana/);
   await expect(page.locator('h1')).toContainText('I build web apps');
   await expect(page.locator('h1')).toContainText('that hold up');
+  await expect(page.locator('.masthead__role')).toHaveText('Software craftsmanship');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
   await expect(page.locator('meta[name="googlebot"]')).toHaveAttribute('content', /noindex/);
 
   await expect(page.locator('.capabilities .row')).toHaveCount(4);
   await expect(page.getByRole('heading', { name: 'Krua Tumya', exact: true })).toBeVisible();
-  const preview = page.locator('.preview__scroll');
-  await expect(preview).toHaveAttribute('tabindex', '0');
-  await expect(preview.locator('img')).toHaveAttribute('alt', /Krua Tumya/);
-  await expect
-    .poll(async () => preview.evaluate((element) => element.scrollHeight > element.clientHeight))
-    .toBe(true);
+  await expect(page.locator('.work__shot img')).toHaveAttribute('alt', /Krua Tumya/);
+  await expect(page.locator('.work__shot a')).toHaveAttribute('href', '/fastwork-portfolio/krua-tumya/');
   await expect(page.locator('.work__spec > div')).toHaveCount(3);
-  await expect(page.locator('.work__gallery img')).toHaveCount(2);
   await expect(page.getByRole('heading', { name: 'Open source', exact: true })).toBeVisible();
   await expect(page.locator('.open-source .row')).toHaveCount(4);
   await expect(page.locator('.note')).toHaveCount(3);
@@ -69,9 +65,7 @@ test('home presents the Krua Tumya work and open-source projects', async ({ page
   await expect(fastwork.nth(0)).toHaveAttribute('target', '_blank');
   await expect(fastwork.nth(1)).toHaveAttribute('href', 'https://fastwork.com/user/yutna');
 
-  const headerFastwork = page.getByRole('link', { name: 'Fastwork', exact: true }).first();
-  await expect(headerFastwork).toHaveAttribute('href', 'https://fastwork.com/user/yutna');
-  await expect(page.locator('a[href="https://fastwork.com/user/yutna"]')).toHaveCount(4);
+  await expect(page.locator('a[href="https://fastwork.com/user/yutna"]')).toHaveCount(3);
   expect(errors).toEqual([]);
 });
 
