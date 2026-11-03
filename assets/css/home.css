@@ -322,14 +322,11 @@ img {
 }
 
 .work__shot a {
+    position: relative;
     display: block;
+    overflow: hidden;
     border: 1px solid var(--line);
     background: var(--paper);
-    transition: opacity .15s var(--ease);
-}
-
-.work__shot a:hover {
-    opacity: .96;
 }
 
 .work__shot img {
@@ -337,10 +334,42 @@ img {
     width: 100%;
 }
 
+.work__shot-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 10, 10, .82);
+    color: var(--paper);
+    font-size: .95rem;
+    font-weight: 500;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .18s var(--ease), visibility .18s var(--ease);
+}
+
+.work__shot a:hover .work__shot-overlay,
+.work__shot a:focus-visible .work__shot-overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
 .work__shot figcaption {
     margin-top: 7px;
     color: var(--muted);
     font-size: .75rem;
+}
+
+@media (hover: none), (pointer: coarse) {
+    .work__shot-overlay {
+        inset: auto 12px 12px auto;
+        padding: 7px 10px;
+        border-radius: 4px;
+        background: var(--ink);
+        opacity: 1;
+        visibility: visible;
+    }
 }
 
 .work__summary {
@@ -395,10 +424,6 @@ img {
 .work__spec dd {
     font-size: .82rem;
     line-height: 1.45;
-}
-
-.work__actions {
-    margin-top: 20px;
 }
 
 /* ---------- open source ---------- */

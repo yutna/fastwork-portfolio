@@ -14,23 +14,23 @@ description: "Software craftsmanship in Chiang Mai. I build complex web apps, pe
 </section>
 
 <section class="capabilities" id="services" aria-labelledby="capabilities-title">
-  <h2 id="capabilities-title">What I do</h2>
+  <h2 id="capabilities-title">What you get</h2>
   <dl class="index">
     <div class="row">
-      <dt>Web apps</dt>
-      <dd>React, Next.js, TypeScript, and plain JavaScript for complex interfaces.</dd>
+      <dt>Working software</dt>
+      <dd>Scoped, tested, and ready for real users, not a demo.</dd>
     </div>
     <div class="row">
-      <dt>Developer tooling</dt>
-      <dd>CLI workflows, reusable CI, and agent skills that make the right thing the easy thing.</dd>
+      <dt>A system your team can keep</dt>
+      <dd>Clear boundaries, readable code, and documentation that survives handover.</dd>
     </div>
     <div class="row">
-      <dt>Specifications</dt>
-      <dd>Turn vague requirements into examples, Gherkin, and tests people trust.</dd>
+      <dt>Fewer surprises</dt>
+      <dd>Risks surfaced early, decisions written down, and progress you can see.</dd>
     </div>
     <div class="row">
-      <dt>Delivery</dt>
-      <dd>Evidence, accessibility, and quality gates that survive handover.</dd>
+      <dt>One person across the stack</dt>
+      <dd>Interface, data, and tooling, without handoff gaps.</dd>
     </div>
   </dl>
 </section>
@@ -42,7 +42,7 @@ description: "Software craftsmanship in Chiang Mai. I build complex web apps, pe
   </div>
 
   <figure class="work__shot">
-    <a href="{{ project.path | relative_url }}" aria-label="Open the Krua Tumya live site">
+    <a href="{{ project.path | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="Open the Krua Tumya live site in a new tab">
       <img
         src="{{ project.cover | relative_url }}"
         srcset="{{ project.cover | relative_url }} 1440w, {{ project.cover_2x | relative_url }} 2880w"
@@ -52,6 +52,7 @@ description: "Software craftsmanship in Chiang Mai. I build complex web apps, pe
         alt="{{ project.cover_alt | escape }}"
         loading="eager"
         decoding="async">
+      <span class="work__shot-overlay" aria-hidden="true">Open live site</span>
     </a>
     <figcaption>Krua Tumya homepage</figcaption>
   </figure>
@@ -65,9 +66,6 @@ description: "Software craftsmanship in Chiang Mai. I build complex web apps, pe
     <div><dt>Features</dt><dd>{{ project.features | join: ', ' }}</dd></div>
   </dl>
 
-  <div class="work__actions">
-    <a class="button" href="{{ project.path | relative_url }}">Open the live site</a>
-  </div>
 </section>
 
 <section class="open-source" id="open-source" aria-labelledby="open-source-title">
