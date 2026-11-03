@@ -432,6 +432,25 @@ img {
     margin-top: 66px;
 }
 
+.open-source__intro {
+    max-width: 60ch;
+    margin-bottom: 22px;
+    color: var(--body);
+    font-size: 1rem;
+    line-height: 1.62;
+    text-wrap: pretty;
+}
+
+.open-source__group + .open-source__group {
+    margin-top: 22px;
+}
+
+.open-source__group h3 {
+    margin-bottom: 8px;
+    font-size: .9rem;
+    font-weight: 600;
+}
+
 /* ---------- working notes ---------- */
 
 .notes {

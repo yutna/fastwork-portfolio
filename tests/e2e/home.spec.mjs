@@ -55,7 +55,10 @@ test('home presents the Krua Tumya work and open-source projects', async ({ page
   await expect(page.locator('.work__shot-overlay')).toHaveText('Open live site');
   await expect(page.locator('.work__spec > div')).toHaveCount(3);
   await expect(page.getByRole('heading', { name: 'Open source', exact: true })).toBeVisible();
-  await expect(page.locator('.open-source .row')).toHaveCount(4);
+  await expect(page.locator('.open-source__intro')).toContainText('rulebook for code');
+  await expect(page.locator('.open-source__group')).toHaveCount(3);
+  await expect(page.locator('.open-source .row')).toHaveCount(5);
+  await expect(page.locator('.about__body p').nth(1)).toContainText('missing layer');
   await expect(page.locator('.note')).toHaveCount(3);
   await expect(page.getByRole('heading', { name: 'Need a web developer?' })).toBeVisible();
 
