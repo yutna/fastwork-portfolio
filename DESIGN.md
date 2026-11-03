@@ -108,7 +108,7 @@ The palette is monochrome. There is no accent color; the only green is the avail
 - **Display** (500, clamp(3.2rem, 5.6vw, 4.25rem), 0.98): the homepage statement.
 - **Headline** (600, 1.6rem, 1.2): the project title.
 - **Title** (600, 0.9rem, 1.45): capability rows and working notes.
-- **Body** (400, 1rem, 1.62): running copy, capped near 58ch.
+- **Body** (400, 1rem, 1.62): running copy, capped at 68ch.
 - **Label** (400, 0.78rem, 1.45): metadata, captions, availability. Sentence case.
 
 ### Named Rules
