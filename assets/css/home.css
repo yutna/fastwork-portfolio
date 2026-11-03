@@ -479,6 +479,8 @@ img {
 
 .open-source__group h3 {
     margin: 0 0 4px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
     font-size: 1.05rem;
     font-weight: 600;
     letter-spacing: -.02em;
@@ -532,12 +534,16 @@ img {
 }
 
 .contact h2 {
-    max-width: 18ch;
     font-size: clamp(2.4rem, 4.4vw, 3.2rem);
     font-weight: 500;
     line-height: 1;
     letter-spacing: -.04em;
-    text-wrap: balance;
+}
+
+@media (min-width: 700px) {
+    .contact h2 {
+        white-space: nowrap;
+    }
 }
 
 .nowrap {
