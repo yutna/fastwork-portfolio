@@ -190,22 +190,22 @@ img {
 .status-dot::after {
     position: absolute;
     inset: -3px;
-    border: 1px solid rgba(10, 10, 10, .3);
+    border: 1.5px solid rgba(10, 10, 10, .6);
     border-radius: 50%;
     content: "";
-    animation: status-ring 2.6s var(--ease) infinite;
+    animation: status-ring 2.4s var(--ease) infinite;
 }
 
 @keyframes status-ring {
     0% {
-        opacity: .55;
-        transform: scale(.7);
+        opacity: .8;
+        transform: scale(.8);
     }
 
     70%,
     100% {
         opacity: 0;
-        transform: scale(1.8);
+        transform: scale(2);
     }
 }
 
@@ -484,6 +484,10 @@ img {
     border-top: 0;
 }
 
+.open-source__group .row:last-child {
+    border-bottom: 0;
+}
+
 /* ---------- working notes ---------- */
 
 .notes {
@@ -719,7 +723,7 @@ img {
 
     .status-dot::after {
         animation: none;
-        opacity: .35;
-        transform: scale(1.35);
+        opacity: .7;
+        transform: scale(1.4);
     }
 }
