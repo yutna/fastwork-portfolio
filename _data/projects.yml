@@ -2,7 +2,7 @@
   title: "ครัวตำย่า"
   title_en: "Krua Tumya"
   subtitle: "Isan som tam, made to order"
-  summary: "A self-initiated restaurant website built without a front-end framework: a five-level heat meter, a build-your-own som tam flow, live pricing, and a responsive layout in plain JavaScript and inline SVG."
+  summary: "Built in plain JavaScript, with no front-end framework to maintain. A five-level heat meter, a build-your-own flow, live pricing, and a layout that holds from 390 to 1440."
   type: "Restaurant website · Interactive demo"
   year: "2026"
   stack:

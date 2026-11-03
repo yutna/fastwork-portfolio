@@ -119,7 +119,7 @@ The palette is monochrome. There is no accent color; the only green is the avail
 
 ## Layout
 
-A single 760px column centered on the page, with 24px side gutters on small screens. The masthead uses a name/role line on the left and availability on the right; there is no navigation row. Sections are separated by 58–72px. Capability rows, open-source rows, and working notes use a 210px label column and a flexible text column. Open-source rows carry no rules; each group heading has one rule underneath it, and spacing separates the groups. The project uses one full-width hero screenshot that links to the live site, a three-column spec row, and a short note about the build. At 700px the label columns collapse and the spec becomes one column.
+A single 760px column centered on the page, with 24px side gutters on small screens. The masthead uses a name/role line on the left and availability on the right; there is no navigation row. Sections are separated by 58–72px. Capability rows, open-source rows, and working notes use a 210px label column and a flexible text column. Open-source rows carry no rules; each group heading has one rule underneath it, and spacing separates the groups. The project uses one full-width hero screenshot that links to the live site, a short summary, and a three-column spec row. At 700px the label columns collapse and the spec becomes one column.
 
 ## Elevation & Depth
 

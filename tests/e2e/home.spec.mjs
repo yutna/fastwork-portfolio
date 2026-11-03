@@ -42,7 +42,7 @@ test('home presents the Krua Tumya work and open-source projects', async ({ page
   await expect(page).toHaveTitle(/Yutthana/);
   await expect(page.locator('h1')).toContainText('I build web apps');
   await expect(page.locator('h1')).toContainText('that hold up');
-  await expect(page.locator('.masthead__role')).toHaveText('Software craftsmanship');
+  await expect(page.locator('.masthead__role')).toHaveText('Software craftsmanship · Web apps');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
   await expect(page.locator('meta[name="googlebot"]')).toHaveAttribute('content', /noindex/);
 
@@ -55,10 +55,10 @@ test('home presents the Krua Tumya work and open-source projects', async ({ page
   await expect(page.locator('.work__shot-overlay')).toHaveText('Open live site');
   await expect(page.locator('.work__spec > div')).toHaveCount(3);
   await expect(page.getByRole('heading', { name: 'Open source', exact: true })).toBeVisible();
-  await expect(page.locator('.open-source__intro')).toContainText('rulebook for code');
+  await expect(page.locator('.open-source__intro')).toContainText('rules for code');
   await expect(page.locator('.open-source__group')).toHaveCount(3);
   await expect(page.locator('.open-source .row')).toHaveCount(5);
-  await expect(page.locator('.about__body p').nth(1)).toContainText('missing layer');
+  await expect(page.locator('.about__body p').nth(1)).toContainText('after launch');
   await expect(page.locator('.note')).toHaveCount(3);
   await expect(page.getByRole('heading', { name: 'What are you trying to ship?' })).toBeVisible();
 
