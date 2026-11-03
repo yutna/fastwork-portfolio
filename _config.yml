@@ -21,6 +21,8 @@ exclude:
   - Gemfile.lock
   - LICENSE
   - README.md
+  - PRODUCT.md
+  - DESIGN.md
   - SECURITY.md
   - SUPPORT.md
   - node_modules

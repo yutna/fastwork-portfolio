@@ -44,8 +44,8 @@ upstream version changes.
 This is a public portfolio for Yutthana Siphuengchai, deployed as a
 GitHub Pages project site at <https://yutna.github.io/fastwork-portfolio/>.
 
-- Home: an editorial index with its own identity (`assets/css/home.css`,
-  Instrument Serif, IBM Plex Sans Thai, paper/ink/cobalt).
+- Home: a monochrome software craftsmanship portfolio (`assets/css/home.css`, Schibsted Grotesk,
+  white/black, one project, open-source work, and working notes).
 - `/krua-tumya/`: a Jekyll port of the ครัวตำย่าปากซอย demo. Preserve
   its markup, CSS, palette, fonts, copy, and behaviour. The only visual
   addition is the floating `← Portfolio` link. A non-visual `role="group"`
@@ -71,7 +71,9 @@ GitHub Pages project site at <https://yutna.github.io/fastwork-portfolio/>.
 | `tests/` | Unit tests and Playwright specs; assert behaviour, not implementation |
 | `playwright.config.mjs` | E2E config; use the lightest FDS row |
 | `_config.yml`, `_layouts/`, `_includes/`, `index.html`, `krua-tumya/`, `404.html` | Jekyll pages and shared markup |
+| `PRODUCT.md`, `DESIGN.md` | Product context and design system |
 | `assets/css/` | Home styles |
+| `assets/fonts/` | Self-hosted Schibsted Grotesk (OFL) |
 | `.github/workflows/` | CI, PR checks, Pages, and release |
 | `README.md`, `CONTRIBUTING.md` | Public overview and contributor workflow |
 

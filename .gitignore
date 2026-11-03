@@ -19,6 +19,7 @@ logs/
 
 # Build and test output
 _site/
+.impeccable/
 .jekyll-cache/
 .jekyll-metadata
 .sass-cache/
