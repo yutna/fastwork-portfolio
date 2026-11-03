@@ -118,7 +118,7 @@ The palette is monochrome. There is no accent color and no green.
 
 ## Layout
 
-A single 760px column centered on the page, with 24px side gutters on small screens. The masthead uses a name/role line on the left and availability on the right; there is no navigation row. Sections are separated by 58–72px. Capability rows, open-source rows, and working notes use a 210px label column and a flexible text column. The project uses one full-width hero screenshot that links to the live site, a three-column spec row, and a short note about the build. At 700px the label columns collapse and the spec becomes one column.
+A single 760px column centered on the page, with 24px side gutters on small screens. The masthead uses a name/role line on the left and availability on the right; there is no navigation row. Sections are separated by 58–72px. Capability rows, open-source rows, and working notes use a 210px label column and a flexible text column. Open-source rows are the one list without rules; spacing and the group headings separate them. The project uses one full-width hero screenshot that links to the live site, a three-column spec row, and a short note about the build. At 700px the label columns collapse and the spec becomes one column.
 
 ## Elevation & Depth
 
@@ -149,6 +149,7 @@ Buttons use a 6px radius. Images use a 1px border and no radius. There are no ca
 
 - **Capability rows:** 210px label column, 1fr description, 1px rules between rows.
 - **Working notes:** same row geometry, title and paragraph.
+- **Open-source groups:** 1.05rem group headings with no rules; 9px row padding and 28px between groups. This is the one list where whitespace replaces the rule.
 
 ### Project
 
@@ -161,7 +162,7 @@ Buttons use a 6px radius. Images use a 1px border and no radius. There are no ca
 - Do use Schibsted Grotesk for every text role.
 - Do keep the interface monochrome; the work supplies color.
 - Do describe the work in web development terms.
-- Do keep the 1px rules and flat surfaces.
+- Do keep the 1px rules and flat surfaces, except in the open-source list where spacing does the work.
 - Do show one clear hero screenshot and link it to the live project.
 - Don't add a face mark, accent color, cards, shadows, gradients, or a mono label font.
 - Don't use design, designer, UX, or UI-role language in the interface.

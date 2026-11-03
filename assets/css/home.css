@@ -464,28 +464,24 @@ img {
     text-wrap: pretty;
 }
 
-.open-source__group {
-    padding-top: 14px;
-    border-top: 1px solid var(--line);
+.open-source .index,
+.open-source .row {
+    border: 0;
+}
+
+.open-source .row {
+    padding-block: 9px;
 }
 
 .open-source__group + .open-source__group {
-    margin-top: 22px;
+    margin-top: 28px;
 }
 
 .open-source__group h3 {
-    margin: 0 0 8px;
+    margin: 0 0 4px;
     font-size: 1.05rem;
     font-weight: 600;
     letter-spacing: -.02em;
-}
-
-.open-source__group .index {
-    border-top: 0;
-}
-
-.open-source__group .row:last-child {
-    border-bottom: 0;
 }
 
 /* ---------- working notes ---------- */

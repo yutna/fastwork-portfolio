@@ -60,7 +60,7 @@ test('home presents the Krua Tumya work and open-source projects', async ({ page
   await expect(page.locator('.open-source .row')).toHaveCount(5);
   await expect(page.locator('.about__body p').nth(1)).toContainText('missing layer');
   await expect(page.locator('.note')).toHaveCount(3);
-  await expect(page.getByRole('heading', { name: "What's the next cool thing you need to ship?" })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'What are you trying to ship?' })).toBeVisible();
 
   const live = page.getByRole('link', { name: 'View the live project', exact: true });
   await expect(live).toHaveAttribute('href', '/fastwork-portfolio/krua-tumya/');
