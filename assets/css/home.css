@@ -179,11 +179,34 @@ img {
 }
 
 .status-dot {
+    position: relative;
     width: 6px;
     height: 6px;
     flex: 0 0 auto;
     border-radius: 50%;
     background: var(--ink);
+}
+
+.status-dot::after {
+    position: absolute;
+    inset: -3px;
+    border: 1px solid rgba(10, 10, 10, .3);
+    border-radius: 50%;
+    content: "";
+    animation: status-ring 2.6s var(--ease) infinite;
+}
+
+@keyframes status-ring {
+    0% {
+        opacity: .55;
+        transform: scale(.7);
+    }
+
+    70%,
+    100% {
+        opacity: 0;
+        transform: scale(1.8);
+    }
 }
 
 /* ---------- hero ---------- */
@@ -441,14 +464,24 @@ img {
     text-wrap: pretty;
 }
 
+.open-source__group {
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+}
+
 .open-source__group + .open-source__group {
     margin-top: 22px;
 }
 
 .open-source__group h3 {
-    margin-bottom: 8px;
-    font-size: .9rem;
+    margin: 0 0 8px;
+    font-size: 1.05rem;
     font-weight: 600;
+    letter-spacing: -.02em;
+}
+
+.open-source__group .index {
+    border-top: 0;
 }
 
 /* ---------- working notes ---------- */
@@ -682,5 +715,11 @@ img {
     *::after {
         transition-duration: .01ms !important;
         scroll-behavior: auto !important;
+    }
+
+    .status-dot::after {
+        animation: none;
+        opacity: .35;
+        transform: scale(1.35);
     }
 }
