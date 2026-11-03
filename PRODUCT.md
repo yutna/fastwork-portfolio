@@ -33,13 +33,13 @@ Visitors arrive from <https://fastwork.com/user/yutna>, where the Krua Tumya pos
 - Jekyll with `baseurl: /fastwork-portfolio`.
 - No fake projects, testimonials, metrics, or clients.
 - No analytics, trackers, cookies, or third-party runtime dependencies.
-- No green in the UI.
+- Green is reserved for the availability status dot; no other green in the UI.
 - Keep the Krua Tumya demo page unchanged.
 - WCAG A/AA, visible keyboard focus, reduced motion, and no horizontal overflow at 390, 768, and 1440 pixels.
 
 ## Brand Commitments
 
-Name: Yutthana Siphuengchai. Location: Chiang Mai, Thailand. Voice: direct, specific, technical, and free of hype. English. Fastwork is the primary contact path. The homepage is monochrome, uses Schibsted Grotesk, and avoids design-role language. No face mark, no green.
+Name: Yutthana Siphuengchai. Location: Chiang Mai, Thailand. Voice: direct, specific, technical, and free of hype. English. Fastwork is the primary contact path. The homepage is monochrome, uses Schibsted Grotesk, and avoids design-role language. No face mark; green is reserved for the availability status dot.
 
 ## Evidence on Hand
 

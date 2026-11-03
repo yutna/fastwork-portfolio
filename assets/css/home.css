@@ -29,6 +29,8 @@
     --body: #4A4A4A;
     --muted: #6B6B6B;
     --line: #E4E4E4;
+    --status: #1A7F37;
+    --status-ring: rgba(26, 127, 55, .55);
     --page: 760px;
     --gutter: 24px;
     --font: "Schibsted Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -184,13 +186,13 @@ img {
     height: 6px;
     flex: 0 0 auto;
     border-radius: 50%;
-    background: var(--ink);
+    background: var(--status);
 }
 
 .status-dot::after {
     position: absolute;
     inset: -3px;
-    border: 1.5px solid rgba(10, 10, 10, .6);
+    border: 1.5px solid var(--status-ring);
     border-radius: 50%;
     content: "";
     animation: status-ring 2.4s var(--ease) infinite;

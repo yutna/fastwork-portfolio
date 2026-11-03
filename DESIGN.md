@@ -76,7 +76,7 @@ The page is intentionally quiet. Hierarchy comes from type size, weight, and thi
 
 ## Colors
 
-The palette is monochrome. There is no accent color and no green.
+The palette is monochrome. There is no accent color; the only green is the availability status.
 
 ### Primary
 
@@ -88,12 +88,13 @@ The palette is monochrome. There is no accent color and no green.
 - **Body** (#4A4A4A): running copy.
 - **Muted** (#6B6B6B): metadata, captions, availability, secondary labels.
 - **Line** (#E4E4E4): section and row rules.
+- **Status green** (#1A7F37): the availability dot and its ring only.
 
 ### Named Rules
 
 **The No-Accent Rule.** The interface has no brand color. The project artwork supplies the color; do not add an accent to the chrome.
 
-**The No-Green Rule.** Green is excluded from the UI. Do not recolour the project artwork to remove its green; the work is evidence.
+**The Status-Green Rule.** Green appears only on the availability dot and its ring. Do not use it elsewhere in the UI. Do not recolour the project artwork to remove its green; the work is evidence.
 
 ## Typography
 
