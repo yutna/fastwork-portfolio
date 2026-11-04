@@ -14,7 +14,7 @@ import { load } from 'cheerio';
 
 const SITE = resolve('_site');
 const BASE = '/fastwork-portfolio';
-const ORIGIN = 'https://yutna.github.io';
+const ORIGIN = 'https://yutna.xyz';
 /** @type {string[]} */
 const failures = [];
 /** @type {string[]} */

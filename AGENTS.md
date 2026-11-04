@@ -42,7 +42,7 @@ upstream version changes.
 ## Project
 
 This is a public portfolio for Yutthana Siphuengchai, deployed as a
-GitHub Pages project site at <https://yutna.github.io/fastwork-portfolio/>.
+GitHub Pages project site at <https://yutna.xyz/fastwork-portfolio/>.
 
 - Home: a monochrome software craftsmanship portfolio (`assets/css/home.css`, Schibsted Grotesk,
   white/black, one project, open-source work, and working notes).
