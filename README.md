@@ -7,7 +7,7 @@
 Selected web work by **Yutthana Siphuengchai** — a small, hand-built
 portfolio for GitHub Pages.
 
-**Live site:** <https://yutna.github.io/fastwork-portfolio/>
+**Live site:** <https://yutna.xyz/fastwork-portfolio/>
 
 ## What this is
 
@@ -35,7 +35,7 @@ site — built as a Jekyll project site and deployed with GitHub Actions.
 
 ## Built with
 
-- Ruby 4.0.7, Bundler, Jekyll 4.4.1, WEBrick
+- Ruby 4.0.9, Bundler, Jekyll 4.4.1, WEBrick
 - Node.js 24.22.1, plain ESM with JSDoc types checked by TypeScript
 - Playwright, axe-core, html-validate, and a Node static-site checker
 - GitHub Actions for CI and Pages; mise pins the local toolchain
